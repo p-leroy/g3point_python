@@ -26,8 +26,8 @@ params = tools.read_parameters(ini)
 
 #%% Rotate and detrend the point cloud (what about the polynomial trend?)
 
-a, b, c, dist_signed = fit_plane(xyz)  # fit a plane to the data and get the normal
-normal_raw = np.array([-b, -a, 1])
+a, b, c, dist_signed = fit_plane(xyz)  # fit a plane to the data and get the normal (z = ax + by + c)
+normal_raw = np.array([-a, -b, 1])
 
 point0 = np.array([0, 0, 0])
 sensor_center = np.array([0, 0, 1e32])

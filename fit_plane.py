@@ -8,7 +8,7 @@ def fit_plane(xyz):
     centroid = np.mean(xyz, axis=0)
     xyz_c = xyz - centroid  # centered coordinates
     U, S, Vh = np.linalg.svd(xyz_c, full_matrices=False)  # singular value decomposition
-    n = -Vh[:, 2] /  Vh[-1, -1]
+    n = -Vh.T[:, 2] /  Vh[-1, -1]  # careful, Vh is already transposed, this is different from Matlab
     a = n[0]
     b = n[1]
     c = -np.dot(centroid, n)
