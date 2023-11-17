@@ -1,6 +1,6 @@
 import numpy as np
 
-from g3point_python.fit_plane import vec2rot
+from g3point_python.detrend import vec2rot
 
 #%% first test
 

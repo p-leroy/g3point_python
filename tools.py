@@ -20,7 +20,7 @@ class Parameters:
         self.n_scale = params.getint('n_scale')
         self.min_scale = params.getfloat('min_scale')
         self.max_scale = params.getfloat('max_scale')
-        self.n_npt_cloud = params.getint('n_npt_cloud')
+        self.knn = params.getint('knn')
         self.cf = params.getfloat('cf')
         self.max_angle1 = params.getfloat('max_angle1')
         self.max_angle2 = params.getfloat('max_angle2')

@@ -17,20 +17,37 @@ def fit_plane(xyz):
     return a, b, c, dist_signed
 
 
-def adjust_normal_3d(scene_center, normal, sensor_center):
+def orient_normal(scene_center, normal, sensor_center):
     # Flip the normals so they are oriented towards the sensor center
-    # x,y,z: point coordinates
+    # x,y,z: scene_center
     # u,v,w: normals
     # ox,oy,oz: sensor center
 
     p1 = sensor_center - scene_center
     p2 = normal
 
-    # Flip the normal vector if it is not pointing towards the sensor.
-    angle = np.arctan2(np.linalg.norm(np.cross(p1, p2)), p1 @ p2.T)
+    # Flip the normal vector if it is not pointing towards the sensor
+    angle = np.arctan2(np.linalg.norm(np.cross(p1, p2)), np.dot(p1, p2))
     if angle > np.pi/2 or angle < -np.pi/2:
         normal = -normal  # invert normal
     return normal
+
+
+def orient_normals(points, normals, sensor_center):
+    # Flip the normals so they are oriented towards the sensor center
+    # x,y,z: points
+    # u,v,w: normals
+    # ox,oy,oz: sensor center
+
+    p1 = sensor_center - points
+    p2 = normals
+
+    # Flip the normals if they are not pointing towards the sensor
+    angle = np.arctan2(np.linalg.norm(np.cross(p1, p2), axis=1), np.sum(p1 * p2, axis=1))
+    index = (angle > np.pi / 2) | (angle < -np.pi / 2)
+    normals[index] = -normals[index]  # invert normal
+
+    return normals
 
 
 def get_skew_symmetric_cross_prduct_matrix(v):
@@ -67,3 +84,18 @@ def vec2rot(a, b, method='Rik'):
         rotation = Fi @ G @ np.linalg.inv(Fi)
 
     return rotation
+
+
+def rotate_point_cloud_plane(xyz, axis):
+
+    point0 = np.array([0, 0, 0])
+    sensor_center = np.array([0, 0, 1e32])
+
+    a, b, c, dist_signed = fit_plane(xyz)  # fit a plane to the data (z = ax + by + c)
+    normal = np.array([-a, -b, 1])  # get a normal
+    normal = orient_normal(point0, normal, sensor_center)  # make the normal point along the z direction
+    rotation = vec2rot(normal, axis)  # compute a rotation to align the normal with the axis
+    centroid = np.mean(xyz, axis=0)
+    xyz_detrended = (rotation @ (xyz - centroid).T).T + centroid  # detrend the coordinates
+
+    return xyz_detrended
