@@ -9,6 +9,7 @@ from scipy.spatial import KDTree
 from g3point_python import tools
 from g3point_python.detrend import rotate_point_cloud_plane, orient_normals
 from g3point_python.segment_and_cluster import segment_labels
+from g3point_python.advanced_o3d import show_clouds
 
 #%% Inputs
 dir_ = r"C:\DATA\PhilippeSteer\G3Point"
@@ -72,3 +73,10 @@ o3d.visualization.draw_geometries([pcd_sinks, pcd])
 # Cluster label to prevent over-segmentation
 
 # Clean the segmentation
+
+#%% SHOW CLOUDS
+clouds = (
+    ('pcd', pcd, None, 1),
+    ('pcd_sinks', pcd_sinks, None, 2)
+)
+show_clouds(clouds)
