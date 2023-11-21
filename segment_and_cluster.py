@@ -11,12 +11,12 @@ def addtoStack(index, n_donors, donors, stack):
         addtoStack(donors[index, k], n_donors, donors, stack)
 
 
-def segment_labels(xyz_detrended, knn, neighbors_indexes):
+def segment_labels(xyz, knn, neighbors_indexes):
     print('[segment_labels]')
 
     # for each point, compute the slopes between the point and each one of its neighbors
-    x, y, z = np.split(xyz_detrended, 3, axis=1)
-    n_points = len(xyz_detrended)
+    x, y, z = np.split(xyz, 3, axis=1)
+    n_points = len(xyz)
     dx = x - np.squeeze(x[neighbors_indexes])  # squeeze removes axis of length 1
     dy = y - np.squeeze(y[neighbors_indexes])
     dz = z - np.squeeze(z[neighbors_indexes])

@@ -9,7 +9,7 @@ from scipy.spatial import KDTree
 from g3point_python import tools
 from g3point_python.detrend import rotate_point_cloud_plane, orient_normals
 from g3point_python.segment_and_cluster import segment_labels
-from g3point_python.advanced_o3d import show_clouds
+from g3point_python.visualization import show_clouds
 
 #%% Inputs
 dir_ = r"C:\DATA\PhilippeSteer\G3Point"
@@ -35,7 +35,6 @@ axis = np.array([0, 0, 1])
 xyz_detrended = rotate_point_cloud_plane(xyz, axis)  # make the normal of the fitted plane aligned with the axis
 pcd = o3d.geometry.PointCloud()
 pcd.points = o3d.utility.Vector3dVector(xyz_detrended)
-ret = o3d.io.write_point_cloud(cloud_detrended, pcd)
 
 #%% Show the clean point cloud
 # o3d.visualization.draw_geometries([pcd])
@@ -67,16 +66,9 @@ pcd_sinks = o3d.geometry.PointCloud()
 pcd_sinks.points = o3d.utility.Vector3dVector(xyz_detrended[sink_indexes, :])
 pcd_sinks.paint_uniform_color(np.array([1., 0., 0.]))
 
-#%% draw geometries
-o3d.visualization.draw_geometries([pcd_sinks, pcd])
-
-# Cluster label to prevent over-segmentation
-
-# Clean the segmentation
-
-#%% SHOW CLOUDS
+#%% Show clouds
 clouds = (
-    ('pcd', pcd, None, 1),
-    ('pcd_sinks', pcd_sinks, None, 2)
+    ('pcd', pcd, None, 3),
+    ('pcd_sinks', pcd_sinks, None, 5)
 )
 show_clouds(clouds)
