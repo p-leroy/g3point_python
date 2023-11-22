@@ -21,7 +21,7 @@ class Parameters:
         self.min_scale = params.getfloat('min_scale')
         self.max_scale = params.getfloat('max_scale')
         self.knn = params.getint('knn')
-        self.cf = params.getfloat('cf')
+        self.rad_factor = params.getfloat('rad_factor')
         self.max_angle1 = params.getfloat('max_angle1')
         self.max_angle2 = params.getfloat('max_angle2')
         self.min_flatness = params.getfloat('min_flatness')

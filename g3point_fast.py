@@ -8,7 +8,7 @@ from scipy.spatial import KDTree
 
 from g3point_python import tools
 from g3point_python.detrend import rotate_point_cloud_plane, orient_normals
-from g3point_python.segment_and_cluster import segment_labels
+from g3point_python.segment_and_cluster import cluster_labels, segment_labels
 from g3point_python.visualization import show_clouds
 
 # Inputs
@@ -60,9 +60,12 @@ normals = orient_normals(xyz, np.asarray(pcd.normals), sensor_center)
 # Initial segmentation
 labels, nlabels, labelsnpoint, stacks, ndon, sink_indexes = segment_labels(xyz_detrended, params.knn, neighbors_indexes)
 
+# Cluster labels
+[labels, nlabels, stacks, isink] = cluster_labels(xyz, params, neighbors_indexes,
+                                                  labels, labelsnpoint, stacks, ndon, sink_indexes, surface,normals)
+
 # set pcd random colors
 rng = np.random.default_rng(42)
-# colors = np.random.rand(len(stacks), 3)[labels, :]
 colors = rng.random((len(stacks), 3))[labels, :]
 pcd.colors = o3d.utility.Vector3dVector(colors)
 
