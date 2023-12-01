@@ -10,7 +10,9 @@ Granulometry from 3D Point clouds
 **G3Point** is a tool which aims at automatically measuring the size, shape, and orientation of a large 
 number of individual grains as detected from any type of 3D point clouds describing the topography of surfaces covered by sediments.
 The tool has been developped initially in *Matlab* https://github.com/philippesteer/G3Point
+
 This repository aims at converting the tool in *Python* at first and also to try to improve it it a longer term.
+
 This algorithm relies on 3 main phases:
 1. Grain **segmentation** using a waterhsed algorithm
 2. Grain **merging and cleaning**
