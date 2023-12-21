@@ -5,11 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc0f497f-3735-4e9e-bf11-aebe186f54dc" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/g3point_python.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/g3point_python.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tmp.py" beforeDir="false" afterPath="$PROJECT_DIR$/tmp.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lidar_platform/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lidar_platform/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/g3point_fast.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point_fast.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/segment_and_cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/segment_and_cluster.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lidar_platform/classification/cc_3dmasc.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lidar_platform/classification/cc_3dmasc.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,6 +76,30 @@
       </console-settings>
     </option>
   </component>
+  <component name="RunManager">
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <module name="g3point_python" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -90,22 +113,14 @@
       <workItem from="1701624407794" duration="2703000" />
       <workItem from="1701632902435" duration="758000" />
       <workItem from="1701633679448" duration="292000" />
+      <workItem from="1701817165285" duration="64000" />
+      <workItem from="1702458449698" duration="614000" />
+      <workItem from="1703142201704" duration="12005000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/../lidar_platform/tools/sbf.py</url>
-          <line>41</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/g3point_python$tmp.coverage" NAME="tmp Coverage Results" MODIFIED="1701633147593" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

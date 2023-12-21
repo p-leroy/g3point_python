@@ -1,8 +1,6 @@
-import configparser
 import os
 
 import numpy as np
-import matplotlib.pyplot as plt
 import open3d as o3d
 from scipy.spatial import KDTree
 
@@ -61,8 +59,8 @@ normals = orient_normals(xyz, np.asarray(pcd.normals), sensor_center)
 labels, nlabels, labelsnpoint, stacks, ndon, sink_indexes = segment_labels(xyz_detrended, params.knn, neighbors_indexes)
 
 # Cluster labels
-[labels, nlabels, stacks, isink] = cluster_labels(xyz, params, neighbors_indexes,
-                                                  labels, labelsnpoint, stacks, ndon, sink_indexes, surface,normals)
+# [labels, nlabels, stacks, isink] = cluster_labels(xyz, params, neighbors_indexes,
+#                                                   labels, labelsnpoint, stacks, ndon, sink_indexes, surface,normals)
 
 # set pcd random colors
 rng = np.random.default_rng(42)
