@@ -14,15 +14,15 @@ def add_to_stack(index, n_donors, donors, stack):
         add_to_stack(donors[index, k], n_donors, donors, stack)
 
 
-def add_to_stack_bw(index, delta_bw, Di_bw, stack, local_maximum):
+def add_to_stack_bw(index, delta, Di, stack, local_maximum):
     # This recursive function adds to the stack the donors of an outlet, and then the donors of these
     # donors, etc. Until an entire catchment is added to the stack
 
     stack.append(index)  # add nodes to the stack
 
-    for k in range(delta_bw[index], delta_bw[index + 1]):  # find donors and add them (if any) to the stack
-        if Di_bw[k] != local_maximum:  # avoid infinite loop
-            add_to_stack_bw(Di_bw[k], delta_bw, Di_bw, stack, local_maximum)
+    for k in range(delta[index], delta[index + 1]):  # find donors and add them (if any) to the stack
+        if Di[k] != local_maximum:  # avoid infinite loop
+            add_to_stack_bw(Di[k], delta, Di, stack, local_maximum)
 
 
 def philippe_steer_stack_building(receivers, local_maximum_indexes, knn):
@@ -66,15 +66,15 @@ def braun_willett_stack_building(receivers, local_maximum_indexes):
         di[receiver] = di[receiver] + 1
         Dij[receiver].append(k)
 
-    # build Di_bw, the list of donors
-    Di_bw = np.zeros(n_points, dtype=int)  # list of donors
+    # build Di, the list of donors
+    Di = np.zeros(n_points, dtype=int)  # list of donors
     idx = 0
     for list_ in Dij:  # build the list of donors
         for point in list_:
-            Di_bw[idx] = point
+            Di[idx] = point
             idx = idx + 1
 
-    # build delta_bw, the index array
+    # build delta, the index array
     delta = np.zeros(n_points + 1, dtype=int)  # index of the first donor
     delta[n_points] = n_points
     for i in range(n_points - 1, -1, -1):
@@ -86,7 +86,7 @@ def braun_willett_stack_building(receivers, local_maximum_indexes):
     # build the stacks
     for k, ij in enumerate(local_maximum_indexes):
         stack = []
-        add_to_stack_bw(ij, delta, Di_bw, stack, ij)  # recursive function
+        add_to_stack_bw(ij, delta, Di, stack, ij)  # recursive function
         stacks.append(stack)
         labels[stack] = k
         points_per_label[stack] = len(stack)

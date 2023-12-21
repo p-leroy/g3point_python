@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="bc0f497f-3735-4e9e-bf11-aebe186f54dc" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/g3point_fast.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point_fast.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/segment_and_cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/segment_and_cluster.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../lidar_platform/classification/cc_3dmasc.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lidar_platform/classification/cc_3dmasc.py" afterDir="false" />
     </list>
@@ -115,12 +114,23 @@
       <workItem from="1701633679448" duration="292000" />
       <workItem from="1701817165285" duration="64000" />
       <workItem from="1702458449698" duration="614000" />
-      <workItem from="1703142201704" duration="12005000" />
+      <workItem from="1703142201704" duration="16804000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/segment_and_cluster.py</url>
+          <line>96</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/g3point_python$tmp.coverage" NAME="tmp Coverage Results" MODIFIED="1701633147593" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
