@@ -13,11 +13,12 @@ from g3point_python.visualization import show_clouds
 dir_ = r"C:\DATA\PhilippeSteer\G3Point"
 cloud = os.path.join(dir_, "Otira_1cm_grains.ply")
 cloud_detrended = os.path.join(dir_, "Otira_1cm_grains_rotated_detrended.ply")
+cloud_ardeche = os.path.join(dir_, "Ardeche_2021_inter_survey_C2.part.laz")
 ini = r"C:\dev\python\g3point_python\params.ini"
 
+
 # Load data
-pcd_orig = o3d.io.read_point_cloud(cloud).points
-xyz = np.asarray(pcd_orig)
+xyz = tools.load_data(cloud_ardeche)
 # Remove min values
 xyz = xyz - np.amin(xyz, axis=0)
 

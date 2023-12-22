@@ -141,7 +141,7 @@ def anglerot2vecmat(a,b):
     return angle
 
 
-def cluster_labels(xyz, params, neighbors_indexes, labels, nlabels, stacks, ndon, sink_indexes, surface,normals):
+def cluster_labels(xyz, params, neighbors_indexes, labels, nlabels, stacks, ndon, sink_indexes, surface, normals):
 
     print('[cluster_labels]')
 

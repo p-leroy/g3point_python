@@ -1,4 +1,22 @@
 import configparser
+import os
+
+import laspy
+import numpy as np
+
+def load_data(file):
+    ext = os.path.splitext(file)[-1]
+    if ext == '.ply':
+        pcd_orig = o3d.io.read_point_cloud(cloud).points
+        xyz = np.asarray(pcd_orig)
+    elif ext == '.laz':
+        las_data = laspy.read(file)
+        xyz = np.c_[las_data.X, las_data.Y, las_data.Z]
+    else:
+        raise TypeError('unhandled extension ' + ext)
+
+    return xyz
+
 
 class Parameters:
     def __init__(self, ini):
