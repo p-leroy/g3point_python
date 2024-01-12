@@ -5,8 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc0f497f-3735-4e9e-bf11-aebe186f54dc" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/cluster.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/segment_and_cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/segment_and_cluster.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comparison_with_matlab.py" beforeDir="false" afterPath="$PROJECT_DIR$/comparison_with_matlab.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/g3point.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/g3point_fast.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point_fast.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/segment_and_cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/segment.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tmp.py" beforeDir="false" afterPath="$PROJECT_DIR$/tmp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../lidar_platform/classification/cc_3dmasc.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lidar_platform/classification/cc_3dmasc.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -37,9 +43,12 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/README.md" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/cluster.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/comparison_with_matlab.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/g3point_fast.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/segment.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/tmp.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../lidar_platform/tools/cc.py" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../lidar_platform/tools/sbf.py" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -116,19 +125,42 @@
       <workItem from="1701817165285" duration="64000" />
       <workItem from="1702458449698" duration="614000" />
       <workItem from="1703142201704" duration="16804000" />
+      <workItem from="1704701247912" duration="1867000" />
+      <workItem from="1704970955854" duration="1870000" />
+      <workItem from="1704977583770" duration="2239000" />
+      <workItem from="1704983157701" duration="3905000" />
+      <workItem from="1704990039439" duration="337000" />
+      <workItem from="1704990390290" duration="1041000" />
+      <workItem from="1705044185752" duration="22236000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/segment_and_cluster.py</url>
-          <line>96</line>
-          <option name="timeStamp" value="10" />
+          <url>file://$PROJECT_DIR$/segment.py</url>
+          <line>209</line>
+          <option name="timeStamp" value="34" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/cluster.py</url>
+          <line>187</line>
+          <option name="timeStamp" value="39" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

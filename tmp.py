@@ -6,7 +6,7 @@ from scipy.spatial import KDTree
 
 from g3point_python import tools
 from g3point_python.detrend import orient_normals
-from g3point_python.segment_and_cluster import segment_labels
+from g3point_python.segment import segment_labels
 from g3point_python.visualization import show_clouds
 
 from lidar_platform import sbf

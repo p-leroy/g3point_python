@@ -1,7 +1,6 @@
 from time import perf_counter
 
 import numpy as np
-import scipy
 
 
 def add_to_stack(index, n_donors, donors, stack):
@@ -125,96 +124,3 @@ def segment_labels(xyz, knn, neighbors_indexes, braun_willett=True):
     nlabels = len(local_maximum_indexes)
 
     return labels, nlabels, labelsnpoint, stacks, ndon, local_maximum_indexes
-
-
-def anglerot2vecmat(a,b):
-
-    c = np.zeros(max(len(a),len(b)))
-    c[1,:] = a[2, :] * b[3, :] - a[3, :] * b[2, :]
-    c[2,:] = a[3, :] * b[1, :] - a[1, :] * b[3, :]
-    c[3,:] = a[1, :] * b[2, :] - a[2, :] * b[1, :]
-
-    d = np.sum(a * b, 1)
-
-    angle = np.arctan2(np.linalg.norm(c), d)
-
-    return angle
-
-
-def cluster_labels(xyz, params, neighbors_indexes, labels, nlabels, stacks, ndon, sink_indexes, surface, normals):
-
-    print('[cluster_labels]')
-
-    # Compute the distances between sinks associated to each label
-    D1 = scipy.spatial.distance.cdist(xyz[sink_indexes, :], xyz[sink_indexes, :])
-    # Radius of each label (assuming the surface corresponds to a disk)
-    A = np.zeros((1, nlabels))
-    for k in range(nlabels):
-        A[0, k] = np.sum(surface[stacks[k]])
-
-    radius = np.sqrt(A / np.pi)
-
-    # Inter-distance by summing radius
-    D2 = np.zeros((nlabels,nlabels))
-    D2 = radius + radius.T
-    Dist = np.zeros((nlabels,nlabels))
-    ind = np.where(params.rad_factor * D2 > D1)
-    Dist[ind] = 1
-    Dist = Dist - np.eye(len(Dist))
-
-    # Determine if labels are neighbours
-    Nneigh = np.zeros((nlabels,nlabels))
-    for k in range(nlabels):
-        ind = np.unique(labels[neighbors_indexes[stacks[k],:]])
-        Nneigh[k, ind] = 1
-
-    # Determine if the normals at the border of labels are similars
-    # Find the indexborder nodes (No bonor and many other labels in the Neighbourhood)
-    temp = params.knn - np.sum(labels[neighbors_indexes] == np.tile(labels.reshape(-1, 1), params.knn), axis=1)
-    indborder = np.where((temp >= params.knn / 4) & (ndon==0))[0]
-    # Compute the angle of the normal vector between the neighbours of each
-    # grain/label
-    A = np.zeros((nlabels,nlabels))
-    N = np.zeros((nlabels,nlabels))
-    # => CHECKED STEP BY STEP UNTIL THIS POINT
-    for k in range(len(indborder)):
-        # i = index of the point / j = index of the neighbourhood of i
-        i = indborder[k]
-        j = neighbors_indexes[i, :]
-        # Take the normals vector for i and j (repmat on the normal vector for i to have the
-        # same size as for j)
-        P1 = np.matlib.repmat(normals[i, :], params.knn, 1)
-        P2 = normals[j, :]
-        # Compute the angle between the normal of i and the normals of j
-        # Add this angle to the angle matrix between each label
-        A[labels[i], labels[j]] = A[labels[i], labels[j]] + anglerot2vecmat(P1, P2)
-        # Number of occurence
-        N[labels[i], labels[j]] = N[labels[i], labels[j]] + 1
-
-    # Take the mean value
-    Aangle = A / N
-
-    # ---- Merge grains
-    # Matrix of labels to be merged
-    Mmerge = np.zeros((nlabels,nlabels))
-    Mmerge[np.where(Dist < 1 | Nneigh < 1 | Aangle > params.maxangle1)] = np.Inf
-
-    [idx, _] = dbscan(Mmerge, 1, 1,'Distance', 'precomputed')
-    newlabels = np.zeros(labels.shape)
-    new_stacks = []
-    for i in range(len(np.unique(idx))):
-        ind = np.where(idx == i)
-        for j in range(len(ind)):
-            newlabels[stacks[ind[[j]]]] = i
-            new_stacks.append(stack[ind[j]])
-
-    labels = newlabels
-    nlabels = max(labels)
-    stacks = new_stacks
-    nstack = [len(stack) for stack in new_stacks]
-
-    for i in range(nlabels):
-        temp = np.argmax(xyz(stacks[i], 3))
-        sink_indexes[i] = stacks[i][temp]
-
-    return labels, nlabels, stack, sink_indexes

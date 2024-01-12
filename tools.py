@@ -3,11 +3,13 @@ import os
 
 import laspy
 import numpy as np
+import open3d as o3d
+
 
 def load_data(file):
     ext = os.path.splitext(file)[-1]
     if ext == '.ply':
-        pcd_orig = o3d.io.read_point_cloud(cloud).points
+        pcd_orig = o3d.io.read_point_cloud(file).points
         xyz = np.asarray(pcd_orig)
     elif ext == '.laz':
         las_data = laspy.read(file)

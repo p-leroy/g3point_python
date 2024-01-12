@@ -21,3 +21,5 @@ stack = scipy.io.loadmat(r'C:\DATA\PhilippeSteer\G3Point\stack.mat')['stack']
 stacks[0] - stack[0, 0] + 1
 stacks[1] - stack[0, 1] + 1
 stacks[10] - stack[0, 10] + 1
+
+#%%
