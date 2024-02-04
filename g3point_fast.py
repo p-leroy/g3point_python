@@ -17,7 +17,6 @@ cloud_detrended = os.path.join(dir_, "Otira_1cm_grains_rotated_detrended.ply")
 cloud_ardeche = os.path.join(dir_, "Ardeche_2021_inter_survey_C2.part.laz")
 ini = r"C:\dev\python\g3point_python\params.ini"
 
-
 # Load data
 xyz = tools.load_data(cloud)
 # Remove min values
@@ -62,11 +61,11 @@ labels, nlabels, labelsnpoint, stacks, ndon, sink_indexes = segment_labels(xyz_d
 
 # Cluster labels
 [labels, nlabels, stacks, sink_indexes] = cluster_labels(xyz, params, neighbors_indexes,
-                                                  labels, nlabels, stacks, ndon, sink_indexes, surface,normals)
+                                                         labels, nlabels, stacks, ndon, sink_indexes, surface, normals)
 
 # Clean labels
 [labels, nlabels, stacks, sink_indexes] = clean_labels(xyz, params, neighbors_indexes,
-                                                       labels, nlabels, stacks, ndon, sink_indexes, surface,normals)
+                                                       labels, nlabels, stacks, ndon, sink_indexes, surface, normals)
 
 # set pcd random colors
 rng = np.random.default_rng(42)
@@ -78,7 +77,7 @@ pcd_sinks = o3d.geometry.PointCloud()
 pcd_sinks.points = o3d.utility.Vector3dVector(xyz[sink_indexes, :])
 pcd_sinks.paint_uniform_color(np.array([1., 0., 0.]))
 
-#%%
+# %%
 clouds = (
     ('pcd', pcd, None, 3),
     ('pcd_sinks', pcd_sinks, None, 5)

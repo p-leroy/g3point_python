@@ -5,7 +5,6 @@ from sklearn.cluster import DBSCAN
 
 
 def angle_rot_2_vec_mat(a, b):
-
     c = np.zeros(max(a.shape, b.shape))
     c[:, 0] = a[:, 1] * b[:, 2] - a[:, 2] * b[:, 1]
     c[:, 1] = a[:, 2] * b[:, 0] - a[:, 0] * b[:, 2]
@@ -13,68 +12,67 @@ def angle_rot_2_vec_mat(a, b):
 
     d = np.sum(a * b, 1)
 
-    angle = np.arctan2(np.linalg.norm(c, 2), d) * 180 / np.pi  # norm None => Frobenius norm, 2 => 2-norm (largest sing. value)
+    angle = np.arctan2(np.linalg.norm(c, 2),
+                       d) * 180 / np.pi  # norm None => Frobenius norm, 2 => 2-norm (largest sing. value)
 
     return angle
 
 
 def cluster_labels(xyz, params, neighbors_indexes, labels, nlabels, stacks, ndon, sink_indexes, surface, normals):
-
     print(f'[cluster_labels]')
     nlabels_start = nlabels
 
     # Compute the distances between sinks associated to each label
     D1 = scipy.spatial.distance.cdist(xyz[sink_indexes, :], xyz[sink_indexes, :])
+
     # Radius of each label (assuming the surface corresponds to a disk)
     A = np.zeros((1, nlabels))
     for k, stack in enumerate(stacks):
         A[0, k] = np.sum(surface[stack])
-
     radius = np.sqrt(A / np.pi)
+    D2 = radius + radius.T  # Inter-distance by summing radius
 
-    # Inter-distance by summing radius
-    D2 = np.zeros((nlabels,nlabels))
-    D2 = radius + radius.T
+    # if the radius of the sink is above the distance to the other sink (by a factor of rad_factor), set Dist to 1
     ind = np.where(params.rad_factor * D2 > D1)
     Dist = np.zeros((nlabels, nlabels))
     Dist[ind] = 1
     Dist = Dist - np.eye(len(Dist))
 
-    # Determine if labels are neighbours
-    Nneigh = np.zeros((nlabels,nlabels))
-    for k in range(nlabels):
-        ind = np.unique(labels[neighbors_indexes[stacks[k],:]])
+    # if labels are neighbours, set Nneigh to 1
+    Nneigh = np.zeros((nlabels, nlabels))
+    for k, stack in enumerate(stacks):
+        ind = np.unique(labels[neighbors_indexes[stack, :]])
         Nneigh[k, ind] = 1
 
-    # Determine if the normals at the border of labels are similars
-    # Find the indexborder nodes (No bonor and many other labels in the Neighbourhood)
+    # Determine if the normals at the border of labels are similar
+    # Find the indexborder nodes (no donor and many other labels in the neighbourhood)
     temp = params.knn - np.sum(labels[neighbors_indexes] == np.tile(labels.reshape(-1, 1), params.knn), axis=1)
-    indborder = np.where((temp >= params.knn / 4) & (ndon==0))[0]
-    # Compute the angle of the normal vector between the neighbours of each
-    # grain/label
-    A = np.zeros((nlabels,nlabels))
-    N = np.zeros((nlabels,nlabels))
-    for k in range(len(indborder)):
-        i = indborder[k]  # i = index of the point
-        j = neighbors_indexes[i, :]  # index of the neighbourhood of i
-        # Take the normals vector for i and j (repmat on the normal vector for i to have the same size as for j)
-        P1 = numpy.matlib.repmat(normals[i, :], params.knn, 1)
+    indborder = np.where((temp >= params.knn / 4) & (ndon == 0))[0]
+    # Compute the angle of the normal vector between the neighbours of each grain / label
+    A = np.zeros((nlabels, nlabels))
+    N = np.zeros((nlabels, nlabels))
+    for i in indborder:  # i = index of the point
+        j = neighbors_indexes[i, :]  # indexes of the neighbourhood of i
+        # Take the normals vector for i and j (duplicate the normal vector of i to have the same size as for j)
+        P1 = numpy.tile(normals[i, :], (params.knn, 1))
         P2 = normals[j, :]
         # Compute the angle between the normal of i and the normals of j
         # Add this angle to the angle matrix between each label
         A[labels[i], labels[j]] = A[labels[i], labels[j]] + angle_rot_2_vec_mat(P1, P2)
-        # Number of occurences
+        # Number of occurrences
         N[labels[i], labels[j]] = N[labels[i], labels[j]] + 1
 
     # Take the mean value
-    # Aangle = A / N  # Aangle[np.where(N == 0)] = 0  may be needed to avoir NaNs
     Aangle = np.zeros(A.shape)
     N_not_null = np.where(N != 0)
     Aangle[N_not_null] = A[N_not_null] / N[N_not_null]
 
     # ---- Merge grains
-    # Matrix of labels to be merged
-    Mmerge = np.zeros((nlabels,nlabels))
+    Mmerge = np.zeros((nlabels, nlabels))  # Matrix of labels to be merged
+    # consider merging only if sinks are
+    # => close to each other (Dist == 1)
+    # => neighbours (Nneigh == 1)
+    # => normals are similar
     Mmerge[np.where((Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))] = 1e9
     np.fill_diagonal(Mmerge, 0)
     clustering = DBSCAN(eps=1, min_samples=1, metric='precomputed').fit(Mmerge)
@@ -90,41 +88,38 @@ def cluster_labels(xyz, params, neighbors_indexes, labels, nlabels, stacks, ndon
     labels = newlabels
     nlabels = len(np.unique(labels))
     stacks = new_stacks
-    nstack = [len(stack) for stack in stacks]
 
     sink_indexes = np.zeros(nlabels, dtype=int)
     for k, stack in enumerate(stacks):
         sink_index = np.argmax(xyz[stack, 2])
         sink_indexes[k] = stack[sink_index]
 
-    print(f'[cluster_labels] check normals at the borders: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')
+    print(
+        f'[cluster_labels] check normals at the borders: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')
 
     return labels, nlabels, stacks, sink_indexes
 
 
 def clean_labels(xyz, params, neighbors_indexes, labels, nlabels, stacks, ndon, sink_indexes, surface, normals):
-
     print('[clean_labels]')
     nlabels_start = nlabels
 
-    # Determine if the normals at the border of labels are similars
-    # Find the indexborder nodes (No bonor and many other labels in the Neighbourhood)
+    # Determine if the normals at the border of labels are similar
+    # Find the indexborder nodes (no donor and many other labels in the neighbourhood)
     temp = params.knn - np.sum(labels[neighbors_indexes] == np.tile(labels.reshape(-1, 1), params.knn), axis=1)
     indborder = np.where((temp >= params.knn / 4) & (ndon == 0))[0]
-    # Compute the angle of the normal vector between the neighbours of each
-    # grain/label
+    # Compute the angle of the normal vector between the neighbours of each grain / label
     A = np.zeros((nlabels, nlabels))
     N = np.zeros((nlabels, nlabels))
-    for k in range(len(indborder)):
-        i = indborder[k]  # i = index of the point
+    for i in indborder: # i = index of the point
         j = neighbors_indexes[i, :]  # index of the neighbourhood of i
         # Take the normals vector for i and j (repmat on the normal vector for i to have the same size as for j)
-        P1 = numpy.matlib.repmat(normals[i, :], params.knn, 1)
+        P1 = numpy.tile(normals[i, :], (params.knn, 1))
         P2 = normals[j, :]
         # Compute the angle between the normal of i and the normals of j
         # Add this angle to the angle matrix between each label
         A[labels[i], labels[j]] = A[labels[i], labels[j]] + angle_rot_2_vec_mat(P1, P2)
-        # Number of occurences
+        # Number of occurrences
         N[labels[i], labels[j]] = N[labels[i], labels[j]] + 1
 
     # Take the mean value
@@ -157,7 +152,8 @@ def clean_labels(xyz, params, neighbors_indexes, labels, nlabels, stacks, ndon, 
         sink_index = np.argmax(xyz[stack, 2])
         sink_indexes[k] = stack[sink_index]
 
-    print(f'[clean_labels] check normals at the borders: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')
+    print(
+        f'[clean_labels] check normals at the borders: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')
     nlabels_start = nlabels
 
     # remove small labels
@@ -184,7 +180,8 @@ def clean_labels(xyz, params, neighbors_indexes, labels, nlabels, stacks, ndon, 
         U, S, Vh = np.linalg.svd(xyz_c, full_matrices=False)  # singular value decomposition
         r[k, :] = S
     # filtering: (l2 / l0 > min_flatness) or (l1 / l0 > 2 * min_flatness)
-    clusters_to_keep = np.where((r[:, 2] / r[:,  0] > params.min_flatness) | (r[:, 1]  /  r[:, 0] > 2. * params.min_flatness))[0]
+    clusters_to_keep = \
+    np.where((r[:, 2] / r[:, 0] > params.min_flatness) | (r[:, 1] / r[:, 0] > 2. * params.min_flatness))[0]
     newlabels = np.zeros(labels.shape, dtype=int)
     newisink = np.zeros(clusters_to_keep.shape, dtype=int)
     new_stacks = []
