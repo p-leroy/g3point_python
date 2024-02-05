@@ -60,12 +60,11 @@ normals = orient_normals(xyz, np.asarray(pcd.normals), sensor_center)
 labels, nlabels, labelsnpoint, stacks, ndon, sink_indexes = segment_labels(xyz_detrended, params.knn, neighbors_indexes)
 
 # Cluster labels
-[labels, nlabels, stacks, sink_indexes] = cluster_labels(xyz, params, neighbors_indexes,
-                                                         labels, nlabels, stacks, ndon, sink_indexes, surface, normals)
+[labels, nlabels, stacks, sink_indexes] = cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon,
+                                                         sink_indexes, surface, normals)
 
 # Clean labels
-[labels, nlabels, stacks, sink_indexes] = clean_labels(xyz, params, neighbors_indexes,
-                                                       labels, nlabels, stacks, ndon, sink_indexes, surface, normals)
+[labels, nlabels, stacks, sink_indexes] = clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, normals)
 
 # set pcd random colors
 rng = np.random.default_rng(42)

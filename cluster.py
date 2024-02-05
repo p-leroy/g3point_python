@@ -57,20 +57,21 @@ def merge_labels(labels, stacks, condition):
     np.fill_diagonal(Mmerge, 0)
 
     clustering = DBSCAN(eps=1, min_samples=1, metric='precomputed').fit(Mmerge)
-    newlabels = np.zeros(labels.shape, dtype=int)
+    new_labels = np.zeros(labels.shape, dtype=int)
     nb_clusters = len(np.unique(clustering.labels_))
     new_stacks = [[] for k in range(nb_clusters)]
     for i in np.unique(clustering.labels_):
         ind = np.where(clustering.labels_ == i)[0]
         for j in ind:
-            newlabels[stacks[j]] = i
+            new_labels[stacks[j]] = i
             new_stacks[i] = new_stacks[i] + stacks[j]
 
-    return newlabels, new_stacks
+    return new_labels, new_stacks
 
 
-def cluster_labels(xyz, params, neighbors_indexes, labels, nlabels, stacks, ndon, sink_indexes, surface, normals):
+def cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_indexes, surface, normals):
     print(f'[cluster_labels]')
+    nlabels = len(np.unique(labels))
     nlabels_start = nlabels
 
     # Compute the distances between sinks associated to each label
@@ -103,12 +104,8 @@ def cluster_labels(xyz, params, neighbors_indexes, labels, nlabels, stacks, ndon
     # => normals are similar
     labels, stacks = merge_labels(labels, stacks, (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))
     nlabels = len(np.unique(labels))
-    nstack = np.array([len(stack) for stack in stacks])
 
-    sink_indexes = np.zeros(nlabels, dtype=int)
-    for k, stack in enumerate(stacks):
-        sink_index = np.argmax(xyz[stack, 2])
-        sink_indexes[k] = stack[sink_index]
+    sink_indexes = get_sink_indexes(stacks, xyz)
 
     print(
         f'[cluster_labels] check normals at the borders: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')
@@ -116,65 +113,71 @@ def cluster_labels(xyz, params, neighbors_indexes, labels, nlabels, stacks, ndon
     return labels, nlabels, stacks, sink_indexes
 
 
-def clean_labels(xyz, params, neighbors_indexes, labels, nlabels, stacks, ndon, sink_indexes, surface, normals):
+def keep_labels(labels, stacks, condition, sink_indexes):
+
+    clusters_to_keep = np.where(condition)[0]
+    new_labels = np.zeros(labels.shape, dtype=int)
+    new_isink = np.zeros(clusters_to_keep.shape, dtype=int)
+    new_stacks = []
+    for k, index in enumerate(clusters_to_keep):
+        new_stacks.append(stacks[index])
+        new_isink[k] = sink_indexes[index]
+        new_labels[stacks[index]] = k
+
+    return new_labels, new_stacks, new_isink
+
+
+def get_sink_indexes(stacks, xyz):
+
+    nlabels = len(stacks)
+    sink_indexes = np.zeros(nlabels, dtype=int)
+    for k, stack in enumerate(stacks):  # compute sink_indexes
+        sink_index = np.argmax(xyz[stack, 2])
+        sink_indexes[k] = stack[sink_index]
+
+    return sink_indexes
+
+
+def clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, normals):
+
     print('[clean_labels]')
-    nlabels_start = nlabels
+    nlabels_start = len(np.unique(labels))
 
     Aangle = compute_mean_angle(params, labels, neighbors_indexes, ndon, normals)
 
     # Merge grains
-    labels, stacks = merge_labels(labels, stacks, (Aangle > params.max_angle2) | (Aangle == 0))
+    condition = (Aangle > params.max_angle2) | (Aangle == 0)
+    labels, stacks = merge_labels(labels, stacks, condition)
     nlabels = len(np.unique(labels))
     nstack = np.array([len(stack) for stack in stacks])
 
-    sink_indexes = np.zeros(nlabels, dtype=int)
-    for k, stack in enumerate(stacks):
-        sink_index = np.argmax(xyz[stack, 2])
-        sink_indexes[k] = stack[sink_index]
+    sink_indexes = get_sink_indexes(stacks, xyz)
 
     print(
         f'[clean_labels] check normals at the borders: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')
     nlabels_start = nlabels
 
     # remove small labels
-    clusters_to_keep = np.where(nstack >= params.n_min)[0]
-    newlabels = np.zeros(labels.shape, dtype=int)
-    newisink = np.zeros(clusters_to_keep.shape, dtype=int)
-    new_stacks = []
-    for k, index in enumerate(clusters_to_keep):
-        new_stacks.append(stacks[index])
-        newisink[k] = sink_indexes[index]
-        newlabels[stacks[index]] = k
-    isink = newisink
-    stacks = new_stacks
-    labels = newlabels
+    condition = (nstack >= params.n_min)
+    labels, stacks, isink = keep_labels(labels, stacks, condition, sink_indexes)
+
     nlabels = len(np.unique(labels))
     print(f'[clean_labels] remove small labels: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')
     nlabels_start = nlabels
 
     # remove flattish labels (probably not grains)
     r = np.zeros((nlabels, 3))
-    for k in range(nlabels):
-        centroid = np.mean(xyz[stacks[k], :], axis=0)
-        xyz_c = xyz[stacks[k], :] - centroid  # centered coordinates
+    for k, stack in enumerate(stacks):
+        centroid = np.mean(xyz[stack, :], axis=0)  # compute the centroid of the label
+        xyz_c = xyz[stack, :] - centroid  # centered coordinates
         U, S, Vh = np.linalg.svd(xyz_c, full_matrices=False)  # singular value decomposition
         r[k, :] = S
     # filtering: (l2 / l0 > min_flatness) or (l1 / l0 > 2 * min_flatness)
-    clusters_to_keep = \
-    np.where((r[:, 2] / r[:, 0] > params.min_flatness) | (r[:, 1] / r[:, 0] > 2. * params.min_flatness))[0]
-    newlabels = np.zeros(labels.shape, dtype=int)
-    newisink = np.zeros(clusters_to_keep.shape, dtype=int)
-    new_stacks = []
-    for k, index in enumerate(clusters_to_keep):
-        new_stacks.append(stacks[index])
-        newisink[k] = isink[index]
-        newlabels[stacks[index]] = k
-    isink = newisink
-    stacks = new_stacks
-    labels = newlabels
+    condition = (r[:, 2] / r[:, 0] > params.min_flatness) | (r[:, 1] / r[:, 0] > 2. * params.min_flatness)
+    labels, stacks, isink = keep_labels(labels, stacks, condition, sink_indexes)
+
     nlabels = len(np.unique(labels))
     print(f'[clean_labels] remove flattish labels: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')
-    nlabels_start = nlabels
 
     labels[labels == 0] = -1
 
