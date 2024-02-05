@@ -18,6 +18,57 @@ def angle_rot_2_vec_mat(a, b):
     return angle
 
 
+def compute_mean_angle(params, labels, neighbors_indexes, ndon, normals):
+
+    nlabels = len(np.unique(labels))
+
+    # Determine if the normals at the border of labels are similar
+    # Find the indexborder nodes (no donor and many other labels in the neighbourhood)
+    temp = params.knn - np.sum(labels[neighbors_indexes] == np.tile(labels.reshape(-1, 1), params.knn), axis=1)
+    indborder = np.where((temp >= params.knn / 4) & (ndon == 0))[0]
+    # Compute the angle of the normal vector between the neighbours of each grain / label
+    A = np.zeros((nlabels, nlabels))
+    N = np.zeros((nlabels, nlabels))
+    for i in indborder:  # i = index of the point
+        j = neighbors_indexes[i, :]  # indexes of the neighbourhood of i
+        # Take the normals vector for i and j (duplicate the normal vector of i to have the same size as for j)
+        P1 = numpy.tile(normals[i, :], (params.knn, 1))
+        P2 = normals[j, :]
+        # Compute the angle between the normal of i and the normals of j
+        # Add this angle to the angle matrix between each label
+        A[labels[i], labels[j]] = A[labels[i], labels[j]] + angle_rot_2_vec_mat(P1, P2)
+        # Number of occurrences
+        N[labels[i], labels[j]] = N[labels[i], labels[j]] + 1
+
+    # Take the mean value
+    Aangle = np.zeros(A.shape)
+    N_not_null = np.where(N != 0)
+    Aangle[N_not_null] = A[N_not_null] / N[N_not_null]
+
+    return Aangle
+
+
+def merge_labels(labels, stacks, condition):
+
+    nlabels = len(np.unique(labels))
+
+    Mmerge = np.zeros((nlabels, nlabels))  # Matrix of labels to be merged
+    Mmerge[np.where(condition)] = 1e9
+    np.fill_diagonal(Mmerge, 0)
+
+    clustering = DBSCAN(eps=1, min_samples=1, metric='precomputed').fit(Mmerge)
+    newlabels = np.zeros(labels.shape, dtype=int)
+    nb_clusters = len(np.unique(clustering.labels_))
+    new_stacks = [[] for k in range(nb_clusters)]
+    for i in np.unique(clustering.labels_):
+        ind = np.where(clustering.labels_ == i)[0]
+        for j in ind:
+            newlabels[stacks[j]] = i
+            new_stacks[i] = new_stacks[i] + stacks[j]
+
+    return newlabels, new_stacks
+
+
 def cluster_labels(xyz, params, neighbors_indexes, labels, nlabels, stacks, ndon, sink_indexes, surface, normals):
     print(f'[cluster_labels]')
     nlabels_start = nlabels
@@ -44,50 +95,15 @@ def cluster_labels(xyz, params, neighbors_indexes, labels, nlabels, stacks, ndon
         ind = np.unique(labels[neighbors_indexes[stack, :]])
         Nneigh[k, ind] = 1
 
-    # Determine if the normals at the border of labels are similar
-    # Find the indexborder nodes (no donor and many other labels in the neighbourhood)
-    temp = params.knn - np.sum(labels[neighbors_indexes] == np.tile(labels.reshape(-1, 1), params.knn), axis=1)
-    indborder = np.where((temp >= params.knn / 4) & (ndon == 0))[0]
-    # Compute the angle of the normal vector between the neighbours of each grain / label
-    A = np.zeros((nlabels, nlabels))
-    N = np.zeros((nlabels, nlabels))
-    for i in indborder:  # i = index of the point
-        j = neighbors_indexes[i, :]  # indexes of the neighbourhood of i
-        # Take the normals vector for i and j (duplicate the normal vector of i to have the same size as for j)
-        P1 = numpy.tile(normals[i, :], (params.knn, 1))
-        P2 = normals[j, :]
-        # Compute the angle between the normal of i and the normals of j
-        # Add this angle to the angle matrix between each label
-        A[labels[i], labels[j]] = A[labels[i], labels[j]] + angle_rot_2_vec_mat(P1, P2)
-        # Number of occurrences
-        N[labels[i], labels[j]] = N[labels[i], labels[j]] + 1
+    Aangle = compute_mean_angle(params, labels, neighbors_indexes, ndon, normals)
 
-    # Take the mean value
-    Aangle = np.zeros(A.shape)
-    N_not_null = np.where(N != 0)
-    Aangle[N_not_null] = A[N_not_null] / N[N_not_null]
-
-    # ---- Merge grains
-    Mmerge = np.zeros((nlabels, nlabels))  # Matrix of labels to be merged
-    # consider merging only if sinks are
+    # merge labels if sinks are
     # => close to each other (Dist == 1)
     # => neighbours (Nneigh == 1)
     # => normals are similar
-    Mmerge[np.where((Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))] = 1e9
-    np.fill_diagonal(Mmerge, 0)
-    clustering = DBSCAN(eps=1, min_samples=1, metric='precomputed').fit(Mmerge)
-    newlabels = np.zeros(labels.shape, dtype=int)
-    nb_clusters = len(np.unique(clustering.labels_))
-    new_stacks = [[] for k in range(nb_clusters)]
-    for i in np.unique(clustering.labels_):
-        ind = np.where(clustering.labels_ == i)[0]
-        for j in ind:
-            newlabels[stacks[j]] = i
-            new_stacks[i] = new_stacks[i] + stacks[j]
-
-    labels = newlabels
+    labels, stacks = merge_labels(labels, stacks, (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))
     nlabels = len(np.unique(labels))
-    stacks = new_stacks
+    nstack = np.array([len(stack) for stack in stacks])
 
     sink_indexes = np.zeros(nlabels, dtype=int)
     for k, stack in enumerate(stacks):
@@ -104,47 +120,11 @@ def clean_labels(xyz, params, neighbors_indexes, labels, nlabels, stacks, ndon, 
     print('[clean_labels]')
     nlabels_start = nlabels
 
-    # Determine if the normals at the border of labels are similar
-    # Find the indexborder nodes (no donor and many other labels in the neighbourhood)
-    temp = params.knn - np.sum(labels[neighbors_indexes] == np.tile(labels.reshape(-1, 1), params.knn), axis=1)
-    indborder = np.where((temp >= params.knn / 4) & (ndon == 0))[0]
-    # Compute the angle of the normal vector between the neighbours of each grain / label
-    A = np.zeros((nlabels, nlabels))
-    N = np.zeros((nlabels, nlabels))
-    for i in indborder: # i = index of the point
-        j = neighbors_indexes[i, :]  # index of the neighbourhood of i
-        # Take the normals vector for i and j (repmat on the normal vector for i to have the same size as for j)
-        P1 = numpy.tile(normals[i, :], (params.knn, 1))
-        P2 = normals[j, :]
-        # Compute the angle between the normal of i and the normals of j
-        # Add this angle to the angle matrix between each label
-        A[labels[i], labels[j]] = A[labels[i], labels[j]] + angle_rot_2_vec_mat(P1, P2)
-        # Number of occurrences
-        N[labels[i], labels[j]] = N[labels[i], labels[j]] + 1
+    Aangle = compute_mean_angle(params, labels, neighbors_indexes, ndon, normals)
 
-    # Take the mean value
-    Aangle = np.zeros(A.shape)
-    N_not_null = np.where(N != 0)
-    Aangle[N_not_null] = A[N_not_null] / N[N_not_null]
-
-    # ---- Merge grains
-    # Matrix of labels to be merged
-    Mmerge = np.zeros((nlabels, nlabels))
-    Mmerge[np.where((Aangle > params.max_angle2) | (Aangle == 0))] = 1e9
-    np.fill_diagonal(Mmerge, 0)
-    clustering = DBSCAN(eps=1, min_samples=1, metric='precomputed').fit(Mmerge)
-    newlabels = np.zeros(labels.shape, dtype=int)
-    nb_clusters = len(np.unique(clustering.labels_))
-    new_stacks = [[] for k in range(nb_clusters)]
-    for i in np.unique(clustering.labels_):
-        ind = np.where(clustering.labels_ == i)[0]
-        for j in ind:
-            newlabels[stacks[j]] = i
-            new_stacks[i] = new_stacks[i] + stacks[j]
-
-    labels = newlabels
+    # Merge grains
+    labels, stacks = merge_labels(labels, stacks, (Aangle > params.max_angle2) | (Aangle == 0))
     nlabels = len(np.unique(labels))
-    stacks = new_stacks
     nstack = np.array([len(stack) for stack in stacks])
 
     sink_indexes = np.zeros(nlabels, dtype=int)
