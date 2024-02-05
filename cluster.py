@@ -159,7 +159,7 @@ def clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, normals):
 
     # remove small labels
     condition = (nstack >= params.n_min)
-    labels, stacks, isink = keep_labels(labels, stacks, condition, sink_indexes)
+    labels, stacks, sink_indexes = keep_labels(labels, stacks, condition, sink_indexes)
 
     nlabels = len(np.unique(labels))
     print(f'[clean_labels] remove small labels: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')
@@ -174,11 +174,11 @@ def clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, normals):
         r[k, :] = S
     # filtering: (l2 / l0 > min_flatness) or (l1 / l0 > 2 * min_flatness)
     condition = (r[:, 2] / r[:, 0] > params.min_flatness) | (r[:, 1] / r[:, 0] > 2. * params.min_flatness)
-    labels, stacks, isink = keep_labels(labels, stacks, condition, sink_indexes)
+    labels, stacks, sink_indexes = keep_labels(labels, stacks, condition, sink_indexes)
 
     nlabels = len(np.unique(labels))
     print(f'[clean_labels] remove flattish labels: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')
 
     labels[labels == 0] = -1
 
-    return labels, nlabels, stacks, isink
+    return labels, nlabels, stacks, sink_indexes
