@@ -4,7 +4,7 @@ import scipy
 from sklearn.cluster import DBSCAN
 
 
-def angle_rot_2_vec_mat(a, b):
+def angle_rot_2_vec_mat(a, b, v2=False):
     c = np.zeros(max(a.shape, b.shape))
     c[:, 0] = a[:, 1] * b[:, 2] - a[:, 2] * b[:, 1]
     c[:, 1] = a[:, 2] * b[:, 0] - a[:, 0] * b[:, 2]
@@ -12,13 +12,17 @@ def angle_rot_2_vec_mat(a, b):
 
     d = np.sum(a * b, 1)
 
-    angle = np.arctan2(np.linalg.norm(c, 2),
-                       d) * 180 / np.pi  # norm None => Frobenius norm, 2 => 2-norm (largest sing. value)
+    if v2:
+        angle = np.arctan2(np.linalg.norm(c, ord=None, axis=1),
+                           d) * 180 / np.pi  # norm None => Frobenius norm, 2 => 2-norm (largest sing. value)
+    else:
+        angle = np.arctan2(np.linalg.norm(c, 2),
+                           d) * 180 / np.pi  # norm None => Frobenius norm, 2 => 2-norm (largest sing. value)
 
     return angle
 
 
-def compute_mean_angle(params, labels, neighbors_indexes, ndon, normals):
+def compute_mean_angle(params, labels, neighbors_indexes, ndon, normals, v2=False):
 
     nlabels = len(np.unique(labels))
 
@@ -35,10 +39,15 @@ def compute_mean_angle(params, labels, neighbors_indexes, ndon, normals):
         P1 = numpy.tile(normals[i, :], (params.knn, 1))
         P2 = normals[j, :]
         # Compute the angle between the normal of i and the normals of j
-        # Add this angle to the angle matrix between each label
-        A[labels[i], labels[j]] = A[labels[i], labels[j]] + angle_rot_2_vec_mat(P1, P2)
-        # Number of occurrences
-        N[labels[i], labels[j]] = N[labels[i], labels[j]] + 1
+        if v2:
+            for k, n in enumerate(j):
+                A[labels[i], labels[n]] = A[labels[i], labels[n]] + angle_rot_2_vec_mat(P1, P2, v2=v2)[k]
+                N[labels[i], labels[n]] = N[labels[i], labels[n]] + 1
+        else:
+            # Add this angle to the angle matrix between each label
+            A[labels[i], labels[j]] = A[labels[i], labels[j]] + angle_rot_2_vec_mat(P1, P2, v2=True)
+            # Number of occurrences
+            N[labels[i], labels[j]] = N[labels[i], labels[j]] + 1
 
     # Take the mean value
     Aangle = np.zeros(A.shape)
@@ -96,7 +105,7 @@ def cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_in
         ind = np.unique(labels[neighbors_indexes[stack, :]])
         Nneigh[k, ind] = 1
 
-    Aangle = compute_mean_angle(params, labels, neighbors_indexes, ndon, normals)
+    Aangle = compute_mean_angle(params, labels, neighbors_indexes, ndon, normals, v2=True)
 
     # merge labels if sinks are
     # => close to each other (Dist == 1)
