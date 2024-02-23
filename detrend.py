@@ -18,7 +18,7 @@ def fit_plane(xyz):
 
 
 def orient_normal(scene_center, normal, sensor_center):
-    # Flip the normals so they are oriented towards the sensor center
+    # Flip the normals, so they are oriented towards the sensor center
     # x,y,z: scene_center
     # u,v,w: normals
     # ox,oy,oz: sensor center
@@ -34,7 +34,7 @@ def orient_normal(scene_center, normal, sensor_center):
 
 
 def orient_normals(points, normals, sensor_center):
-    # Flip the normals so they are oriented towards the sensor center
+    # Flip the normals, so they are oriented towards the sensor center
     # x,y,z: points
     # u,v,w: normals
     # ox,oy,oz: sensor center

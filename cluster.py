@@ -26,10 +26,10 @@ def compute_mean_angle(params, labels, neighbors_indexes, ndon, normals, v2=Fals
 
     nlabels = len(np.unique(labels))
 
-    # Determine if the normals at the border of labels are similar
     # Find the indexborder nodes (no donor and many other labels in the neighbourhood)
     temp = params.knn - np.sum(labels[neighbors_indexes] == np.tile(labels.reshape(-1, 1), params.knn), axis=1)
     indborder = np.where((temp >= params.knn / 4) & (ndon == 0))[0]
+
     # Compute the angle of the normal vector between the neighbours of each grain / label
     A = np.zeros((nlabels, nlabels))
     N = np.zeros((nlabels, nlabels))
@@ -131,13 +131,13 @@ def cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_in
     radius = np.sqrt(A / np.pi)
     D2 = radius + radius.T  # Inter-distance by summing radius
 
-    # if the radius of the sink is above the distance to the other sink (by a factor of rad_factor), set Dist to 1
+    # If the radius of the sink is above the distance to the other sink (by a factor of rad_factor), set Dist to 1
     ind = np.where(params.rad_factor * D2 > D1)
     Dist = np.zeros((nlabels, nlabels))
     Dist[ind] = 1
     Dist = Dist - np.eye(len(Dist))
 
-    # if labels are neighbours, set Nneigh to 1
+    # If labels are neighbours, set Nneigh to 1
     Nneigh = np.zeros((nlabels, nlabels))
     for k, stack in enumerate(stacks):
         ind = np.unique(labels[neighbors_indexes[stack, :]])
@@ -145,9 +145,9 @@ def cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_in
 
     Aangle = compute_mean_angle(params, labels, neighbors_indexes, ndon, normals, v2=v2)
 
-    # merge labels if sinks are
-    # => close to each other (Dist == 1)
-    # => neighbours (Nneigh == 1)
+    # Merge labels if:
+    # => sinks are close to each other (Dist == 1)
+    # => sinks are neighbours (Nneigh == 1)
     # => normals are similar
     if v2:
         labels, stacks = merge_labels_v2(labels, stacks, (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))
@@ -168,14 +168,14 @@ def keep_labels(labels, stacks, condition, sink_indexes):
 
     clusters_to_keep = np.where(condition)[0]
     new_labels = np.zeros(labels.shape, dtype=int)
-    new_isink = np.zeros(clusters_to_keep.shape, dtype=int)
+    new_sink_indexes = np.zeros(clusters_to_keep.shape, dtype=int)
     new_stacks = []
     for k, index in enumerate(clusters_to_keep):
         new_stacks.append(stacks[index])
-        new_isink[k] = sink_indexes[index]
+        new_sink_indexes[k] = sink_indexes[index]
         new_labels[stacks[index]] = k
 
-    return new_labels, new_stacks, new_isink
+    return new_labels, new_stacks, new_sink_indexes
 
 
 def get_sink_indexes(stacks, xyz):
@@ -223,7 +223,7 @@ def clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, normals):
         xyz_c = xyz[stack, :] - centroid  # centered coordinates
         U, S, Vh = np.linalg.svd(xyz_c, full_matrices=False)  # singular value decomposition
         r[k, :] = S
-    # filtering: (l2 / l0 > min_flatness) or (l1 / l0 > 2 * min_flatness)
+    # filtering condition: (l2 / l0 > min_flatness) or (l1 / l0 > 2 * min_flatness)
     condition = (r[:, 2] / r[:, 0] > params.min_flatness) | (r[:, 1] / r[:, 0] > 2. * params.min_flatness)
     labels, stacks, sink_indexes = keep_labels(labels, stacks, condition, sink_indexes)
 
