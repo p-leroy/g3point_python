@@ -45,7 +45,7 @@ def compute_mean_angle(params, labels, neighbors_indexes, ndon, normals, v2=Fals
                 N[labels[i], labels[n]] = N[labels[i], labels[n]] + 1
         else:
             # Add this angle to the angle matrix between each label
-            A[labels[i], labels[j]] = A[labels[i], labels[j]] + angle_rot_2_vec_mat(P1, P2, v2=True)
+            A[labels[i], labels[j]] = A[labels[i], labels[j]] + angle_rot_2_vec_mat(P1, P2, v2=v2)
             # Number of occurrences
             N[labels[i], labels[j]] = N[labels[i], labels[j]] + 1
 
@@ -78,7 +78,45 @@ def merge_labels(labels, stacks, condition):
     return new_labels, new_stacks
 
 
-def cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_indexes, surface, normals):
+def merge_labels_v2(labels, stacks, condition):
+    nlabels = len(stacks)
+    newLabels = np.ones(labels.shape, dtype=int) * (-1)
+    countNewLabels = 0
+    newStacks = []
+
+    for label in range(nlabels):
+
+        newLabel = newLabels[label]
+
+        if newLabels[label] == -1:
+            newLabel = countNewLabels
+            newLabels[label] = newLabel
+            newStacks.append(stacks[label])
+            currentStack = newStacks[countNewLabels]
+            countNewLabels = countNewLabels + 1
+        else:
+            currentStack = newStacks[newLabel]
+
+        for otherLabel in range(nlabels):
+
+            if (otherLabel == label) or (newLabels[otherLabel] != -1):
+                continue
+
+            if not condition[label, otherLabel]:
+                # merge OtherLabel into label
+                newLabels[otherLabel] = newLabel
+                currentStack.extend(stacks[otherLabel])
+
+    # redefine labels
+    new_labels = np.ones(labels.shape, dtype = int) * (-1)
+    for k, stack in enumerate(newStacks):
+        for index in stack:
+            new_labels[index] = k
+
+    return new_labels, newStacks
+
+
+def cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_indexes, surface, normals, v2=False):
     print(f'[cluster_labels]')
     nlabels = len(np.unique(labels))
     nlabels_start = nlabels
@@ -105,13 +143,17 @@ def cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_in
         ind = np.unique(labels[neighbors_indexes[stack, :]])
         Nneigh[k, ind] = 1
 
-    Aangle = compute_mean_angle(params, labels, neighbors_indexes, ndon, normals, v2=True)
+    Aangle = compute_mean_angle(params, labels, neighbors_indexes, ndon, normals, v2=v2)
 
     # merge labels if sinks are
     # => close to each other (Dist == 1)
     # => neighbours (Nneigh == 1)
     # => normals are similar
-    labels, stacks = merge_labels(labels, stacks, (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))
+    if v2:
+        labels, stacks = merge_labels_v2(labels, stacks, (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))
+    else:
+        labels, stacks = merge_labels(labels, stacks, (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))
+
     nlabels = len(np.unique(labels))
 
     sink_indexes = get_sink_indexes(stacks, xyz)
