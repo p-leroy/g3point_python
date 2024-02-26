@@ -4,9 +4,7 @@ import numpy as np
 import open3d as o3d
 from scipy.spatial import KDTree
 
-import laspy
-
-from g3point_python import tools
+from g3point_python import cluster, tools
 from g3point_python.detrend import rotate_point_cloud_plane, orient_normals
 from g3point_python.cluster import clean_labels, cluster_labels
 from g3point_python.segment import segment_labels
@@ -63,58 +61,8 @@ labels, nlabels, labelsnpoint, stacks, ndon, sink_indexes = segment_labels(xyz_d
 
 # Cluster labels
 [labels, nlabels, stacks, sink_indexes] = cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon,
-                                                         sink_indexes, surface, normals, v2=True)
+                                                         sink_indexes, surface, normals, v2=False, my_merge=True)
 
 #%%
-root, ext = os.path.splitext(cloud)
-filename = root + '_G3POINT.laz'
-
-las = laspy.create(point_format=7, file_version='1.4')
-
-las.x = xyz[:, 0] + mins[0]
-las.y = xyz[:, 1] + mins[1]
-las.z = xyz[:, 2] + mins[2]
-
-# set random colors
-rng = np.random.default_rng(42)
-rgb = rng.random((len(stacks), 3))[labels, :] * 255
-las.red = rgb[:, 0]
-las.green = rgb[:, 1]
-las.blue = rgb[:, 2]
-
-las.add_extra_dim(laspy.ExtraBytesParams(
-    name="g3point_label",
-    type=np.uint32
-))
-
-las.g3point_label = labels
-
-print(f"save {filename}")
-las.write(filename)
-
-#%% Save sinks
-root, ext = os.path.splitext(cloud)
-filename = root + '_G3POINT_SINKS.laz'
-
-las = laspy.create(point_format=7, file_version='1.4')
-
-las.x = xyz[sink_indexes, 0] + mins[0]
-las.y = xyz[sink_indexes, 1] + mins[1]
-las.z = xyz[sink_indexes, 2] + mins[2]
-
-# set random colors
-rng = np.random.default_rng(42)
-rgb = rng.random((len(stacks), 3)) * 255
-las.red = rgb[:, 0]
-las.green = rgb[:, 1]
-las.blue = rgb[:, 2]
-
-las.add_extra_dim(laspy.ExtraBytesParams(
-    name="g3point_label",
-    type=np.uint32
-))
-
-las.g3point_label = np.arange(len(stacks))
-
-print(f"save {filename}")
-las.write(filename)
+tools.save_data_with_colors(cloud, xyz, mins, stacks, labels, '_G3POINT')
+tools.save_data_with_colors(cloud, xyz[sink_indexes, :], mins, stacks, np.arange(len(stacks)), '_G3POINT_SINKS')

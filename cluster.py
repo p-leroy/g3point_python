@@ -15,7 +15,7 @@ def angle_rot_2_vec_mat(a, b, v2=False):
     if v2:
         angle = np.arctan2(np.linalg.norm(c, ord=None, axis=1),
                            d) * 180 / np.pi  # norm None => Frobenius norm, 2 => 2-norm (largest sing. value)
-    else:
+    else:  # this is the original computation from the Matlab code
         angle = np.arctan2(np.linalg.norm(c, 2),
                            d) * 180 / np.pi  # norm None => Frobenius norm, 2 => 2-norm (largest sing. value)
 
@@ -99,13 +99,27 @@ def merge_labels_v2(labels, stacks, condition):
 
         for otherLabel in range(nlabels):
 
-            if (otherLabel == label) or (newLabels[otherLabel] != -1):
+            if (newLabel == 268 and otherLabel == 585):
+                print("268 585")
+            if (newLabel == 585 and otherLabel == 268):
+                print("585 268")
+
+            if (otherLabel == label):
                 continue
 
             if not condition[label, otherLabel]:
-                # merge OtherLabel into label
-                newLabels[otherLabel] = newLabel
-                currentStack.extend(stacks[otherLabel])
+                if (newLabels[otherLabel] != -1):  # we have to merge with an already existing label
+                    newLabel = newLabels[otherLabel]  # update the label value
+                    currentStack = newStacks[newLabel]  # change current stack
+                    currentStack.extend(stacks[label])  # update the current stack
+                    newLabels[label] = newLabel
+                else:
+                    # merge otherLabel into label
+                    newLabels[otherLabel] = newLabel
+                    currentStack.extend(stacks[otherLabel])
+
+    # remove empty stacks
+    newStacks = [stack for stack in stacks if stack != []]
 
     # redefine labels
     new_labels = np.ones(labels.shape, dtype = int) * (-1)
@@ -116,7 +130,45 @@ def merge_labels_v2(labels, stacks, condition):
     return new_labels, newStacks
 
 
-def cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_indexes, surface, normals, v2=False):
+def check_stacks(stacks, number_of_points):
+
+    check = True
+    # Initialize the set of indexes with the first stack
+    stack = stacks[0]
+    myset = {*stack}
+    min = float('inf')
+    max = float('-inf')
+
+    for idx in stack:
+        if idx < min:
+            min = idx
+        if idx > max:
+            max = idx
+
+    for stack in stacks[1:]:
+        for idx in stack:
+            if idx < min:
+                min = idx
+            if idx > max:
+                max = idx
+        myset.update(stack)
+
+    # Check the coherency of the stack
+    if len(myset) != number_of_points:  # number of values in the set
+        check = False
+        raise ValueError('stacks are not coherent: the length of the set shall be equal to the number of points')
+    if min != 0:  # min value in the set
+        check = False
+        raise ValueError('stacks are not coherent: min shall be 0')
+    if max != (number_of_points - 1):  # max value in the set
+        check = False
+        raise ValueError('stacks are not coherent: max shall be equal to number_of_points - 1')
+
+    return check
+
+
+def cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_indexes, surface, normals, v2=False,
+                   my_merge=True):
     print(f'[cluster_labels]')
     nlabels = len(np.unique(labels))
     nlabels_start = nlabels
@@ -152,7 +204,10 @@ def cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_in
     if v2:
         labels, stacks = merge_labels_v2(labels, stacks, (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))
     else:
-        labels, stacks = merge_labels(labels, stacks, (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))
+        if my_merge:
+            labels, stacks = merge_labels_v2(labels, stacks, (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))
+        else:
+            labels, stacks = merge_labels(labels, stacks, (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))
 
     nlabels = len(np.unique(labels))
 
