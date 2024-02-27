@@ -19,7 +19,7 @@ ini = r"C:\dev\python\g3point_python\params.ini"
 # Load data
 xyz = tools.load_data(cloud)
 # Remove min values
-mins = np.amin(xyz, axis=0)
+mins = np.amin(xyz, axis=0) * 0
 xyz = xyz - mins
 
 params = tools.read_parameters(ini)
@@ -62,9 +62,7 @@ labels, nlabels, labelsnpoint, stacks, ndon, sink_indexes = segment_labels(xyz_d
 # Cluster labels
 [labels, nlabels, stacks, sink_indexes] = cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon,
                                                          sink_indexes, surface, normals,
-                                                         v2=False,
-                                                         my_merge=True,
-                                                         condition_flag='symmetrical')
+                                                         v2=True)
 
 #%%
 tools.save_data_with_colors(cloud, xyz, mins, stacks, labels, '_G3POINT')

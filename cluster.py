@@ -114,7 +114,7 @@ def merge_labels_v2(labels, stacks, condition, condition_flag=None):
 
         for otherLabel in range(n_labels):
 
-            if otherLabel == label:
+            if otherLabel == label:  # do not try to merge a label with itself
                 continue
 
             if not condition[label, otherLabel]:
@@ -191,7 +191,8 @@ def cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_in
     if v2:
         labels, stacks = merge_labels_v2(
             labels, stacks,
-            (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))
+            (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1) | (np.isnan(Aangle)),
+            condition_flag=None)
     else:
         if my_merge:
             labels, stacks = merge_labels_v2(
