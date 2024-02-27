@@ -8,21 +8,25 @@ import numpy as np
 import open3d as o3d
 
 
-def get_random_colors_cc(number_of_colors):
-    rng = np.random.default_rng(42)
-    rg = rng.random((number_of_colors, 2)) * 255
-    b = 255 - (rg[:, 0] + rg[:, 1]) / 2
-    rgb = np.c_[rg, b]
-    return rgb
+def get_random_colors(number_of_colors, version=None):
 
+    if version == 'hsv':
+        rgb = np.zeros((number_of_colors, 3))
+        random.seed(42)
+        for k in range(number_of_colors):
+            hue, saturation, lightness = random.random(), 0.8 + random.random() / 5.0, 0.5 + random.random() / 5.0
+            r, g, b = [int(256 * i) for i in colorsys.hls_to_rgb(hue, lightness, saturation)]
+            rgb[k, :] = r, g, b
 
-def get_random_colors(number_of_colors):
-    rgb = np.zeros((number_of_colors, 3))
-    random.seed(42)
-    for k in range(number_of_colors):
-        hue, saturation, lightness = random.random(), 0.8 + random.random() / 5.0, 0.5 + random.random() / 5.0
-        r, g, b = [int(256 * i) for i in colorsys.hls_to_rgb(hue, lightness, saturation)]
-        rgb[k, :] = r, g, b
+    elif version == 'cc':
+        rng = np.random.default_rng(42)
+        rg = rng.random((number_of_colors, 2)) * 255
+        b = 255 - (rg[:, 0] + rg[:, 1]) / 2
+        rgb = np.c_[rg, b]
+
+    else:
+        rng = np.random.default_rng(42)
+        rgb = rng.random((number_of_colors, 3)) * (2**16 - 1)
 
     return rgb
 

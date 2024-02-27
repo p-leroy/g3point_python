@@ -50,14 +50,20 @@ def compute_mean_angle(params, labels, neighbors_indexes, ndon, normals, v2=Fals
             N[labels[i], labels[j]] = N[labels[i], labels[j]] + 1
 
     # Take the mean value
-    Aangle = np.zeros(A.shape)
+    # Aangle = np.zeros(A.shape)
+    Aangle = np.empty(A.shape)
+    Aangle.fill(numpy.nan)
     N_not_null = np.where(N != 0)
     Aangle[N_not_null] = A[N_not_null] / N[N_not_null]
 
     return Aangle
 
 
-def merge_labels(labels, stacks, condition):
+def merge_labels(labels, stacks, condition, symmetric_condition=False):
+
+    # should we make the condition symmetric?
+    if symmetric_condition:
+        condition = condition & condition.T  # force the symmetry of the matrix
 
     nlabels = len(np.unique(labels))
 
@@ -78,97 +84,78 @@ def merge_labels(labels, stacks, condition):
     return new_labels, new_stacks
 
 
-def merge_labels_v2(labels, stacks, condition):
-    nlabels = len(stacks)
-    newLabels = np.ones(labels.shape, dtype=int) * (-1)
-    countNewLabels = 0
-    newStacks = []
+def merge_labels_v2(labels, stacks, condition, condition_flag=None):
 
-    for label in range(nlabels):
+    if condition_flag == 'lower':
+        # keep only the lower triangle of the condition matrix
+        tmp = np.ones(condition.shape, dtype=bool)
+        condition = np.tril(condition) | np.triu(tmp)
+    elif condition_flag == 'upper':
+        # keep only the upper triangle of the condition matrix
+        tmp = np.ones(condition.shape, dtype=bool)
+        condition = np.triu(condition) | np.tril(tmp)
+    elif condition_flag == 'symmetrical':
+        symmetrical_condition = np.ones(condition.shape, dtype=bool)
+        indexes = np.where(condition == condition.T)
+        symmetrical_condition[indexes] = condition[indexes]
+        condition = symmetrical_condition
 
-        newLabel = newLabels[label]
+    n_labels = len(stacks)
+    new_labels = np.ones(labels.shape, dtype=int) * (-1)
+    count_new_labels = 0
+    new_stacks = []
 
-        if newLabels[label] == -1:
-            newLabel = countNewLabels
-            newLabels[label] = newLabel
-            newStacks.append(stacks[label])
-            currentStack = newStacks[countNewLabels]
-            countNewLabels = countNewLabels + 1
-        else:
-            currentStack = newStacks[newLabel]
+    for label in range(n_labels):
 
-        for otherLabel in range(nlabels):
+        if new_labels[label] == -1:
+            new_labels[label] = count_new_labels
+            new_stacks.append(stacks[label])
+            count_new_labels = count_new_labels + 1
 
-            if (newLabel == 268 and otherLabel == 585):
-                print("268 585")
-            if (newLabel == 585 and otherLabel == 268):
-                print("585 268")
+        for otherLabel in range(n_labels):
 
-            if (otherLabel == label):
+            if otherLabel == label:
                 continue
 
             if not condition[label, otherLabel]:
-                if (newLabels[otherLabel] != -1):  # we have to merge with an already existing label
-                    newLabel = newLabels[otherLabel]  # update the label value
-                    currentStack = newStacks[newLabel]  # change current stack
-                    currentStack.extend(stacks[label])  # update the current stack
-                    newLabels[label] = newLabel
-                else:
-                    # merge otherLabel into label
-                    newLabels[otherLabel] = newLabel
-                    currentStack.extend(stacks[otherLabel])
+                if new_labels[otherLabel] != -1:  # the other label has already been merged
+                    if new_labels[label] > new_labels[otherLabel]:  # merge label in OtherLabel
+                        # add the label stack to the otherLabel stack
+                        new_stacks[new_labels[otherLabel]] += new_stacks[new_labels[label]]
+                        # empty the label stack
+                        new_stacks[new_labels[label]] = []
+                        # update the label
+                        new_labels[label] = new_labels[otherLabel]
+                    if new_labels[label] < new_labels[otherLabel]:  # merge otherLabel in label
+                        # add the otherLabel stack to the label stack
+                        new_stacks[new_labels[label]] += new_stacks[new_labels[otherLabel]]
+                        # empty the otherLabel stack
+                        new_stacks[new_labels[otherLabel]] = []
+                        # update the label
+                        new_labels[otherLabel] = new_labels[label]
+                else:  # merge otherLabel and label
+                    new_stacks[new_labels[label]] += stacks[otherLabel]
+                    new_labels[otherLabel] = new_labels[label]
 
     # remove empty stacks
-    newStacks = [stack for stack in stacks if stack != []]
+    if new_stacks.count([]):
+        print(f"there are {new_stacks.count([])} empty stacks, remove them")
+    else:
+       print("no empty stack")
+
+    new_stacks = [stack for stack in new_stacks if stack != []]
 
     # redefine labels
     new_labels = np.ones(labels.shape, dtype = int) * (-1)
-    for k, stack in enumerate(newStacks):
+    for k, stack in enumerate(new_stacks):
         for index in stack:
             new_labels[index] = k
 
-    return new_labels, newStacks
+    return new_labels, new_stacks
 
 
-def check_stacks(stacks, number_of_points):
-
-    check = True
-    # Initialize the set of indexes with the first stack
-    stack = stacks[0]
-    myset = {*stack}
-    min = float('inf')
-    max = float('-inf')
-
-    for idx in stack:
-        if idx < min:
-            min = idx
-        if idx > max:
-            max = idx
-
-    for stack in stacks[1:]:
-        for idx in stack:
-            if idx < min:
-                min = idx
-            if idx > max:
-                max = idx
-        myset.update(stack)
-
-    # Check the coherency of the stack
-    if len(myset) != number_of_points:  # number of values in the set
-        check = False
-        raise ValueError('stacks are not coherent: the length of the set shall be equal to the number of points')
-    if min != 0:  # min value in the set
-        check = False
-        raise ValueError('stacks are not coherent: min shall be 0')
-    if max != (number_of_points - 1):  # max value in the set
-        check = False
-        raise ValueError('stacks are not coherent: max shall be equal to number_of_points - 1')
-
-    return check
-
-
-def cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_indexes, surface, normals, v2=False,
-                   my_merge=True):
+def cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_indexes, surface, normals,
+                   v2=False, my_merge=True, condition_flag=None):
     print(f'[cluster_labels]')
     nlabels = len(np.unique(labels))
     nlabels_start = nlabels
@@ -202,12 +189,19 @@ def cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_in
     # => sinks are neighbours (Nneigh == 1)
     # => normals are similar
     if v2:
-        labels, stacks = merge_labels_v2(labels, stacks, (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))
+        labels, stacks = merge_labels_v2(
+            labels, stacks,
+            (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))
     else:
         if my_merge:
-            labels, stacks = merge_labels_v2(labels, stacks, (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))
+            labels, stacks = merge_labels_v2(
+                labels, stacks,
+                (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1) | (np.isnan(Aangle)),
+                condition_flag=condition_flag)
         else:
-            labels, stacks = merge_labels(labels, stacks, (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))
+            labels, stacks = merge_labels(
+                labels, stacks,
+                (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1) | (np.isnan(Aangle)))
 
     nlabels = len(np.unique(labels))
 
@@ -242,6 +236,43 @@ def get_sink_indexes(stacks, xyz):
         sink_indexes[k] = stack[sink_index]
 
     return sink_indexes
+
+
+def check_stacks(stacks, number_of_points):
+
+    check = True
+    # Initialize the set of indexes with the first stack
+    stack = stacks[0]
+    myset = {*stack}
+    min = float('inf')
+    max = float('-inf')
+
+    for idx in stack:
+        if idx < min:
+            min = idx
+        if idx > max:
+            max = idx
+
+    for stack in stacks[1:]:
+        for idx in stack:
+            if idx < min:
+                min = idx
+            if idx > max:
+                max = idx
+        myset.update(stack)
+
+    # Check the coherency of the stack
+    if len(myset) != number_of_points:  # number of values in the set
+        check = False
+        raise ValueError('stacks are not coherent: the length of the set shall be equal to the number of points')
+    if min != 0:  # min value in the set
+        check = False
+        raise ValueError('stacks are not coherent: min shall be 0')
+    if max != (number_of_points - 1):  # max value in the set
+        check = False
+        raise ValueError('stacks are not coherent: max shall be equal to (number_of_points - 1)')
+
+    return check
 
 
 def clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, normals):

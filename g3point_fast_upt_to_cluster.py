@@ -4,9 +4,9 @@ import numpy as np
 import open3d as o3d
 from scipy.spatial import KDTree
 
-from g3point_python import cluster, tools
+from g3point_python import tools
 from g3point_python.detrend import rotate_point_cloud_plane, orient_normals
-from g3point_python.cluster import clean_labels, cluster_labels
+from g3point_python.cluster import check_stacks, clean_labels, cluster_labels
 from g3point_python.segment import segment_labels
 
 # Inputs
@@ -61,7 +61,10 @@ labels, nlabels, labelsnpoint, stacks, ndon, sink_indexes = segment_labels(xyz_d
 
 # Cluster labels
 [labels, nlabels, stacks, sink_indexes] = cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon,
-                                                         sink_indexes, surface, normals, v2=False, my_merge=True)
+                                                         sink_indexes, surface, normals,
+                                                         v2=False,
+                                                         my_merge=True,
+                                                         condition_flag='symmetrical')
 
 #%%
 tools.save_data_with_colors(cloud, xyz, mins, stacks, labels, '_G3POINT')
