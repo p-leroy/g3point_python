@@ -2,6 +2,8 @@ from time import perf_counter
 
 import numpy as np
 
+from tools import check_stacks
+
 
 def add_to_stack(index, n_donors, donors, stack):
     # This recursive function adds to the stack the donors of an outlet, and then the donors of these
@@ -122,5 +124,8 @@ def segment_labels(xyz, knn, neighbors_indexes, braun_willett=True):
         stacks, labels, labelsnpoint, ndon = philippe_steer_stack_building(receivers, local_maximum_indexes, knn)
 
     nlabels = len(local_maximum_indexes)
+
+    if check_stacks(stacks, len(labels)):
+        print("[segment_labels] stacks are valid")
 
     return labels, nlabels, labelsnpoint, stacks, ndon, local_maximum_indexes

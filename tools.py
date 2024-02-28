@@ -75,39 +75,36 @@ def load_data(file):
     return xyz
 
 
-class Parameters:
-    def __init__(self, ini):
-        config = configparser.ConfigParser()
-        config.read(ini)
-        params = config['DEFAULT']
-        self.name = params['name']
-        self.iplot = params.getint('iplot')
-        self.saveplot = params.getint('saveplot')
-        self.denoise = params.getint('denoise')
-        self.decimate = params.getint('decimate')
-        self.minima = params.getint('minima')
-        self.rot_detrend = params.getint('rot_detrend')
-        self.clean = params.getint('clean')
-        self.grid_by_number = params.getint('grid_by_number')
-        self.save_granulo = params.getint('save_granulo')
-        self.save_grain = params.getint('save_grain')
-        self.res = params.getfloat('res')
-        self.n_scale = params.getint('n_scale')
-        self.min_scale = params.getfloat('min_scale')
-        self.max_scale = params.getfloat('max_scale')
-        self.knn = params.getint('knn')
-        self.rad_factor = params.getfloat('rad_factor')
-        self.max_angle1 = params.getfloat('max_angle1')
-        self.max_angle2 = params.getfloat('max_angle2')
-        self.min_flatness = params.getfloat('min_flatness')
-        self.fit_method = params['fit_method']
-        self.a_quality_thresh = params.getfloat('a_quality_thresh')
-        self.min_diam = params.getfloat('min_diam')
-        self.n_axis = params.getint('n_axis')
-        self.n_min = params.getint('n_min')
-        self.dx_gbn = params.getfloat('dx_gbn')
+def check_stacks(stacks, number_of_points):
 
+    # Initialize the set of indexes with the first stack
+    stack = stacks[0]
+    myset = {*stack}
 
-def read_parameters(ini):
-    params = Parameters(ini)
-    return params
+    # Initializa min and max
+    min = float('inf')
+    max = float('-inf')
+
+    for idx in stack:
+        if idx < min:
+            min = idx
+        if idx > max:
+            max = idx
+
+    for stack in stacks[1:]:
+        for idx in stack:
+            if idx < min:
+                min = idx
+            if idx > max:
+                max = idx
+        myset.update(stack)
+
+    # Check the coherency of the stack
+    if len(myset) != number_of_points:  # number of values in the set
+        raise ValueError('stacks are not coherent: the length of the set shall be equal to the number of points')
+    if min != 0:  # min value in the set
+        raise ValueError('stacks are not coherent: min shall be 0')
+    if max != (number_of_points - 1):  # max value in the set
+        raise ValueError('stacks are not coherent: max shall be equal to (number_of_points - 1)')
+
+    return True

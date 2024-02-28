@@ -6,7 +6,7 @@ from scipy.spatial import KDTree
 
 from g3point_python import tools
 from g3point_python.detrend import rotate_point_cloud_plane, orient_normals
-from g3point_python.cluster import clean_labels, cluster_labels
+from g3point_python.cluster import clean_labels, cluster
 from g3point_python.segment import segment_labels
 from g3point_python.visualization import show_clouds
 
@@ -60,8 +60,8 @@ normals = orient_normals(xyz, np.asarray(pcd.normals), sensor_center)
 labels, nlabels, labelsnpoint, stacks, ndon, sink_indexes = segment_labels(xyz_detrended, params.knn, neighbors_indexes)
 
 # Cluster labels
-[labels, nlabels, stacks, sink_indexes] = cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon,
-                                                         sink_indexes, surface, normals)
+[labels, nlabels, stacks, sink_indexes] = cluster(xyz, params, neighbors_indexes, labels, stacks, ndon,
+                                                  sink_indexes, surface, normals)
 
 # Clean labels
 [labels, nlabels, stacks, sink_indexes] = clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, normals)

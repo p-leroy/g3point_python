@@ -1,10 +1,36 @@
 import numpy as np
-import numpy.matlib
 import scipy
 from sklearn.cluster import DBSCAN
 
+from tools import check_stacks
 
-def angle_rot_2_vec_mat(a, b, v2=False):
+
+def keep_labels(labels, stacks, condition, sink_indexes):
+
+    clusters_to_keep = np.where(condition)[0]
+    new_labels = np.zeros(labels.shape, dtype=int)
+    new_sink_indexes = np.zeros(clusters_to_keep.shape, dtype=int)
+    new_stacks = []
+    for k, index in enumerate(clusters_to_keep):
+        new_stacks.append(stacks[index])
+        new_sink_indexes[k] = sink_indexes[index]
+        new_labels[stacks[index]] = k
+
+    return new_labels, new_stacks, new_sink_indexes
+
+
+def get_sink_indexes(stacks, xyz):
+
+    nlabels = len(stacks)
+    sink_indexes = np.zeros(nlabels, dtype=int)
+    for k, stack in enumerate(stacks):  # compute sink_indexes
+        sink_index = np.argmax(xyz[stack, 2])
+        sink_indexes[k] = stack[sink_index]
+
+    return sink_indexes
+
+
+def angle_rot_2_vec_mat(a, b, version=None):
     c = np.zeros(max(a.shape, b.shape))
     c[:, 0] = a[:, 1] * b[:, 2] - a[:, 2] * b[:, 1]
     c[:, 1] = a[:, 2] * b[:, 0] - a[:, 0] * b[:, 2]
@@ -12,7 +38,7 @@ def angle_rot_2_vec_mat(a, b, v2=False):
 
     d = np.sum(a * b, 1)
 
-    if v2:
+    if version == 'cpp':
         angle = np.arctan2(np.linalg.norm(c, ord=None, axis=1),
                            d) * 180 / np.pi  # norm None => Frobenius norm, 2 => 2-norm (largest sing. value)
     else:  # this is the original computation from the Matlab code
@@ -22,7 +48,7 @@ def angle_rot_2_vec_mat(a, b, v2=False):
     return angle
 
 
-def compute_mean_angle(params, labels, neighbors_indexes, ndon, normals, v2=False):
+def compute_mean_angle(params, labels, neighbors_indexes, ndon, normals, version=None):
 
     nlabels = len(np.unique(labels))
 
@@ -36,33 +62,36 @@ def compute_mean_angle(params, labels, neighbors_indexes, ndon, normals, v2=Fals
     for i in indborder:  # i = index of the point
         j = neighbors_indexes[i, :]  # indexes of the neighbourhood of i
         # Take the normals vector for i and j (duplicate the normal vector of i to have the same size as for j)
-        P1 = numpy.tile(normals[i, :], (params.knn, 1))
+        P1 = np.tile(normals[i, :], (params.knn, 1))
         P2 = normals[j, :]
         # Compute the angle between the normal of i and the normals of j
-        if v2:
+        if version == 'cpp' or version == 'custom':
             for k, n in enumerate(j):
-                A[labels[i], labels[n]] = A[labels[i], labels[n]] + angle_rot_2_vec_mat(P1, P2, v2=v2)[k]
+                A[labels[i], labels[n]] = A[labels[i], labels[n]] + angle_rot_2_vec_mat(P1, P2, version='cpp')[k]
                 N[labels[i], labels[n]] = N[labels[i], labels[n]] + 1
-        else:
+        elif version == 'matlab' or 'matlab_dbscan':
             # Add this angle to the angle matrix between each label
-            A[labels[i], labels[j]] = A[labels[i], labels[j]] + angle_rot_2_vec_mat(P1, P2, v2=v2)
+            A[labels[i], labels[j]] = A[labels[i], labels[j]] + angle_rot_2_vec_mat(P1, P2, version=None)
             # Number of occurrences
             N[labels[i], labels[j]] = N[labels[i], labels[j]] + 1
 
     # Take the mean value
     # Aangle = np.zeros(A.shape)
     Aangle = np.empty(A.shape)
-    Aangle.fill(numpy.nan)
+    if version == 'matlab' or 'matlab_dbscan':
+        Aangle.fill(0)
+    else:
+        Aangle.fill(np.nan)
     N_not_null = np.where(N != 0)
     Aangle[N_not_null] = A[N_not_null] / N[N_not_null]
 
     return Aangle
 
 
-def merge_labels(labels, stacks, condition, symmetric_condition=False):
+def merge_labels_dbscan(labels, stacks, condition, condition_flag=None):
 
     # should we make the condition symmetric?
-    if symmetric_condition:
+    if condition_flag == 'symmetrical':
         condition = condition & condition.T  # force the symmetry of the matrix
 
     nlabels = len(np.unique(labels))
@@ -84,7 +113,7 @@ def merge_labels(labels, stacks, condition, symmetric_condition=False):
     return new_labels, new_stacks
 
 
-def merge_labels_v2(labels, stacks, condition, condition_flag=None):
+def merge_cpp(labels, stacks, condition, condition_flag=None):
 
     if condition_flag == 'lower':
         # keep only the lower triangle of the condition matrix
@@ -94,7 +123,11 @@ def merge_labels_v2(labels, stacks, condition, condition_flag=None):
         # keep only the upper triangle of the condition matrix
         tmp = np.ones(condition.shape, dtype=bool)
         condition = np.triu(condition) | np.tril(tmp)
-    elif condition_flag == 'symmetrical':
+    elif condition_flag == 'symmetrical_large':
+        # force the symmetry of the matrix in an extensive way
+        condition = condition & condition.T
+    elif condition_flag == 'symmetrical_strict':
+        # force the symmetry of the matrix in a restrictive way
         symmetrical_condition = np.ones(condition.shape, dtype=bool)
         indexes = np.where(condition == condition.T)
         symmetrical_condition[indexes] = condition[indexes]
@@ -154,8 +187,8 @@ def merge_labels_v2(labels, stacks, condition, condition_flag=None):
     return new_labels, new_stacks
 
 
-def cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_indexes, surface, normals,
-                   v2=False, my_merge=True, condition_flag=None):
+def cluster(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_indexes, surface, normals,
+            version='matlab', condition_flag=None):
     print(f'[cluster_labels]')
     nlabels = len(np.unique(labels))
     nlabels_start = nlabels
@@ -182,31 +215,40 @@ def cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_in
         ind = np.unique(labels[neighbors_indexes[stack, :]])
         Nneigh[k, ind] = 1
 
-    Aangle = compute_mean_angle(params, labels, neighbors_indexes, ndon, normals, v2=v2)
+    Aangle = compute_mean_angle(params, labels, neighbors_indexes, ndon, normals, version=version)
 
     # Merge labels if:
     # => sinks are close to each other (Dist == 1)
     # => sinks are neighbours (Nneigh == 1)
     # => normals are similar
-    if v2:
-        labels, stacks = merge_labels_v2(
+    if version == 'matlab':
+        labels, stacks = merge_cpp(
+            labels, stacks,
+            (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1),
+            condition_flag=condition_flag)
+    elif version == 'matlab_dbscan':
+        labels, stacks = merge_labels_dbscan(
+            labels, stacks,
+            (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))
+    elif version == 'cpp':
+        labels, stacks = merge_cpp(
             labels, stacks,
             (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1) | (np.isnan(Aangle)),
-            condition_flag=None)
+            condition_flag='symmetrical_strict')
+    elif version == 'custom':
+        labels, stacks = merge_cpp(
+            labels, stacks,
+            (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1) | (np.isnan(Aangle)),
+            condition_flag=condition_flag)
     else:
-        if my_merge:
-            labels, stacks = merge_labels_v2(
-                labels, stacks,
-                (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1) | (np.isnan(Aangle)),
-                condition_flag=condition_flag)
-        else:
-            labels, stacks = merge_labels(
-                labels, stacks,
-                (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1) | (np.isnan(Aangle)))
+        raise ValueError("[cluster_labels] precise a version 'cpp' 'matlab' 'matlab_dbscan' 'custom'")
 
     nlabels = len(np.unique(labels))
 
     sink_indexes = get_sink_indexes(stacks, xyz)
+
+    if check_stacks(stacks, len(labels)):
+        print("[cluster_labels] stacks are valid")
 
     print(
         f'[cluster_labels] check normals at the borders: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')
@@ -214,78 +256,39 @@ def cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_in
     return labels, nlabels, stacks, sink_indexes
 
 
-def keep_labels(labels, stacks, condition, sink_indexes):
-
-    clusters_to_keep = np.where(condition)[0]
-    new_labels = np.zeros(labels.shape, dtype=int)
-    new_sink_indexes = np.zeros(clusters_to_keep.shape, dtype=int)
-    new_stacks = []
-    for k, index in enumerate(clusters_to_keep):
-        new_stacks.append(stacks[index])
-        new_sink_indexes[k] = sink_indexes[index]
-        new_labels[stacks[index]] = k
-
-    return new_labels, new_stacks, new_sink_indexes
-
-
-def get_sink_indexes(stacks, xyz):
-
-    nlabels = len(stacks)
-    sink_indexes = np.zeros(nlabels, dtype=int)
-    for k, stack in enumerate(stacks):  # compute sink_indexes
-        sink_index = np.argmax(xyz[stack, 2])
-        sink_indexes[k] = stack[sink_index]
-
-    return sink_indexes
-
-
-def check_stacks(stacks, number_of_points):
-
-    check = True
-    # Initialize the set of indexes with the first stack
-    stack = stacks[0]
-    myset = {*stack}
-    min = float('inf')
-    max = float('-inf')
-
-    for idx in stack:
-        if idx < min:
-            min = idx
-        if idx > max:
-            max = idx
-
-    for stack in stacks[1:]:
-        for idx in stack:
-            if idx < min:
-                min = idx
-            if idx > max:
-                max = idx
-        myset.update(stack)
-
-    # Check the coherency of the stack
-    if len(myset) != number_of_points:  # number of values in the set
-        check = False
-        raise ValueError('stacks are not coherent: the length of the set shall be equal to the number of points')
-    if min != 0:  # min value in the set
-        check = False
-        raise ValueError('stacks are not coherent: min shall be 0')
-    if max != (number_of_points - 1):  # max value in the set
-        check = False
-        raise ValueError('stacks are not coherent: max shall be equal to (number_of_points - 1)')
-
-    return check
-
-
-def clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, normals):
+def clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, normals,
+                 version='matlab', condition_flag=None):
 
     print('[clean_labels]')
     nlabels_start = len(np.unique(labels))
 
-    Aangle = compute_mean_angle(params, labels, neighbors_indexes, ndon, normals)
+    Aangle = compute_mean_angle(params, labels, neighbors_indexes, ndon, normals, version=version)
 
-    # Merge grains
-    condition = (Aangle > params.max_angle2) | (Aangle == 0)
-    labels, stacks = merge_labels(labels, stacks, condition)
+    # Merge grains if:
+    # =>
+    # => normals are similar
+    if version == 'matlab':
+        labels, stacks = merge_cpp(
+            labels, stacks,
+            (Aangle > params.max_angle2) | (Aangle == 0),
+            condition_flag=condition_flag)
+    elif version == 'matlab_dbscan':
+        labels, stacks = merge_labels_dbscan(
+            labels, stacks,
+            (Aangle > params.max_angle2) | (Aangle == 0))
+    elif version == 'cpp':
+        labels, stacks = merge_cpp(
+            labels, stacks,
+            (Aangle > params.max_angle2) | (np.isnan(Aangle)),
+            condition_flag='symmetrical_strict')
+    elif version == 'custom':
+        labels, stacks = merge_cpp(
+            labels, stacks,
+            (Aangle > params.max_angle2) | (np.isnan(Aangle)),
+            condition_flag=condition_flag)
+    else:
+        raise ValueError("[cluster_labels] precise a version 'matlab' 'matlab_dbscan' 'cpp' 'custom'")
+
     nlabels = len(np.unique(labels))
     nstack = np.array([len(stack) for stack in stacks])
 

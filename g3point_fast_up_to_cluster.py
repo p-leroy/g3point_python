@@ -4,9 +4,9 @@ import numpy as np
 import open3d as o3d
 from scipy.spatial import KDTree
 
-from g3point_python import tools
+from g3point_python import Parameters, tools
 from g3point_python.detrend import rotate_point_cloud_plane, orient_normals
-from g3point_python.cluster import check_stacks, clean_labels, cluster_labels
+from g3point_python.cluster import clean_labels, cluster
 from g3point_python.segment import segment_labels
 
 # Inputs
@@ -22,7 +22,7 @@ xyz = tools.load_data(cloud)
 mins = np.amin(xyz, axis=0) * 0
 xyz = xyz - mins
 
-params = tools.read_parameters(ini)
+params = Parameters.Parameters(ini)
 
 # Rotate and detrend the point cloud
 if params.rot_detrend:
@@ -60,9 +60,13 @@ normals = orient_normals(xyz, np.asarray(pcd.normals), sensor_center)
 labels, nlabels, labelsnpoint, stacks, ndon, sink_indexes = segment_labels(xyz_detrended, params.knn, neighbors_indexes)
 
 # Cluster labels
-[labels, nlabels, stacks, sink_indexes] = cluster_labels(xyz, params, neighbors_indexes, labels, stacks, ndon,
-                                                         sink_indexes, surface, normals,
-                                                         v2=True)
+[labels, nlabels, stacks, sink_indexes] = cluster(xyz, params, neighbors_indexes, labels, stacks, ndon,
+                                                  sink_indexes, surface, normals,
+                                                  version='matlab_dbscan', condition_flag='symmetrical_strict')
+
+# Clean labels
+[labels, nlabels, stacks, sink_indexes] = clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon,
+                                                       normals, version='matlab_dbscan')
 
 #%%
 tools.save_data_with_colors(cloud, xyz, mins, stacks, labels, '_G3POINT')
