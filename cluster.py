@@ -247,8 +247,8 @@ def cluster(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_indexes, 
 
     sink_indexes = get_sink_indexes(stacks, xyz)
 
-    if check_stacks(stacks, len(labels)):
-        print("[cluster_labels] stacks are valid")
+    if not check_stacks(stacks, len(labels)):
+        raise "[cluster] stacks are not valid"
 
     print(
         f'[cluster_labels] check normals at the borders: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')

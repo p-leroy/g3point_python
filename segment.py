@@ -115,7 +115,8 @@ def segment_labels(xyz, knn, neighbors_indexes, braun_willett=True):
     receivers = neighbors_indexes[np.arange(n_points), index_of_min_slope]
 
     # if the minimum slope is positive, we have a local maximum
-    local_maximum_indexes = np.where(min_slope > 0)[0]
+    # look for the minimum slopes
+    local_maximum_indexes = np.where(min_slope >= 0)[0]  # be careful to use >= and not >
     receivers[local_maximum_indexes] = local_maximum_indexes
 
     if braun_willett:

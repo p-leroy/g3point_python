@@ -12,12 +12,13 @@ from g3point_python.segment import segment_labels
 # Inputs
 dir_ = r"C:\DATA\PhilippeSteer\G3Point"
 cloud = os.path.join(dir_, "Otira_1cm_grains.ply")
+cloud_test_laz = os.path.join(dir_, "test.laz")
 cloud_detrended = os.path.join(dir_, "Otira_1cm_grains_rotated_detrended.ply")
 cloud_ardeche = os.path.join(dir_, "Ardeche_2021_inter_survey_C2.part.laz")
 ini = r"C:\dev\python\g3point_python\params.ini"
 
 # Load data
-xyz = tools.load_data(cloud)
+xyz = tools.load_data(cloud_test_laz)
 # Remove min values
 mins = np.amin(xyz, axis=0) * 0
 xyz = xyz - mins
@@ -62,11 +63,11 @@ labels, nlabels, labelsnpoint, stacks, ndon, sink_indexes = segment_labels(xyz_d
 # Cluster labels
 [labels, nlabels, stacks, sink_indexes] = cluster(xyz, params, neighbors_indexes, labels, stacks, ndon,
                                                   sink_indexes, surface, normals,
-                                                  version='matlab_dbscan', condition_flag='symmetrical_strict')
+                                                  version='cpp', condition_flag=None)
 
 # Clean labels
-[labels, nlabels, stacks, sink_indexes] = clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon,
-                                                       normals, version='matlab_dbscan')
+# [labels, nlabels, stacks, sink_indexes] = clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, normals,
+#                                                        version='cpp', condition_flag='symmetrical_strict')
 
 #%%
 tools.save_data_with_colors(cloud, xyz, mins, stacks, labels, '_G3POINT')

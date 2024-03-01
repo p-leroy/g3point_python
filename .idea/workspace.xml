@@ -5,14 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc0f497f-3735-4e9e-bf11-aebe186f54dc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Parameters.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/g3point_fast_up_to_cluster.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/cluster.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/g3point_fast.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point_fast.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/g3point_fast_upt_to_cluster.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/g3point_fast_up_to_cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point_fast_up_to_cluster.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/segment.py" beforeDir="false" afterPath="$PROJECT_DIR$/segment.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -148,6 +144,7 @@
       <workItem from="1709038321157" duration="4669000" />
       <workItem from="1709043668327" duration="4754000" />
       <workItem from="1709105590052" duration="4288000" />
+      <workItem from="1709275165710" duration="9556000" />
     </task>
     <servers />
   </component>
@@ -215,20 +212,20 @@
           <option name="timeStamp" value="56" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/segment.py</url>
-          <line>127</line>
-          <option name="timeStamp" value="58" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/cluster.py</url>
           <line>130</line>
           <option name="timeStamp" value="59" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/cluster.py</url>
+          <line>217</line>
+          <option name="timeStamp" value="60" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/g3point_python$g3point_fast_up_to_cluster.coverage" NAME="g3point_fast_up_to_cluster Coverage Results" MODIFIED="1709109556431" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/g3point_python$g3point_fast_up_to_cluster.coverage" NAME="g3point_fast_up_to_cluster Coverage Results" MODIFIED="1709301847787" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/g3point_python$tmp.coverage" NAME="tmp Coverage Results" MODIFIED="1701633147593" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/g3point_python$g3point_fast.coverage" NAME="g3point_fast Coverage Results" MODIFIED="1708440550872" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/g3point_python$g3point_fast_upt_to_cluster.coverage" NAME="g3point_fast_upt_to_cluster Coverage Results" MODIFIED="1709045236948" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
