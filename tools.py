@@ -81,7 +81,7 @@ def check_stacks(stacks, number_of_points):
     stack = stacks[0]
     myset = {*stack}
 
-    # Initializa min and max
+    # Initialize min and max
     min = float('inf')
     max = float('-inf')
 

@@ -5,10 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc0f497f-3735-4e9e-bf11-aebe186f54dc" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/ellipsoid.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/plot_ellipsoid.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/cluster.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/g3point.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/g3point_fast_up_to_cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point_fast_up_to_cluster.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/segment.py" beforeDir="false" afterPath="$PROJECT_DIR$/segment.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,8 +78,8 @@
 }</component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
-      <console-settings custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;%load_ext autoreload&#10;%autoreload 2&#10;" module-name="g3point_python" is-module-sdk="true">
-        <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;%load_ext autoreload&#10;%autoreload 2&#10;" />
+      <console-settings custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;%load_ext autoreload&#10;%autoreload 2&#10;%matplotlib qt5&#10;" module-name="g3point_python" is-module-sdk="true">
+        <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;%load_ext autoreload&#10;%autoreload 2&#10;%matplotlib qt5&#10;" />
         <option name="myUseModuleSdk" value="true" />
         <option name="myModuleName" value="g3point_python" />
       </console-settings>
@@ -145,6 +149,15 @@
       <workItem from="1709043668327" duration="4754000" />
       <workItem from="1709105590052" duration="4288000" />
       <workItem from="1709275165710" duration="9556000" />
+      <workItem from="1710169098639" duration="4059000" />
+      <workItem from="1710315328307" duration="1198000" />
+      <workItem from="1710402260332" duration="609000" />
+      <workItem from="1710405231901" duration="5437000" />
+      <workItem from="1710506621396" duration="4258000" />
+      <workItem from="1710747967954" duration="2270000" />
+      <workItem from="1710796964276" duration="596000" />
+      <workItem from="1710920146420" duration="20260000" />
+      <workItem from="1711004727923" duration="28075000" />
     </task>
     <servers />
   </component>
@@ -212,14 +225,14 @@
           <option name="timeStamp" value="56" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/cluster.py</url>
-          <line>130</line>
-          <option name="timeStamp" value="59" />
+          <url>file://$PROJECT_DIR$/ellipsoid.py</url>
+          <line>155</line>
+          <option name="timeStamp" value="89" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/cluster.py</url>
-          <line>217</line>
-          <option name="timeStamp" value="60" />
+          <url>file://$PROJECT_DIR$/ellipsoid.py</url>
+          <line>108</line>
+          <option name="timeStamp" value="90" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

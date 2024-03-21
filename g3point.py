@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import open3d as o3d
 from scipy.spatial import KDTree
 
-from g3point_python import tools
+from g3point_python import Parameters, tools
 from g3point_python.detrend import rotate_point_cloud_plane, orient_normals
 from g3point_python.segment import segment_labels
 from g3point_python.visualization import show_clouds
@@ -22,7 +22,7 @@ pcd_orig = o3d.io.read_point_cloud(cloud).points
 xyz = np.asarray(pcd_orig)
 
 #%% Algorithm parameters - Compute point cloud size and scaling of the algorithm
-params = tools.read_parameters(ini)
+params = Parameters.Parameters(ini)
 
 #%% Denoise and decimate point cloud
 pass

@@ -17,3 +17,18 @@ This algorithm relies on 3 main phases:
 1. Grain **segmentation** using a waterhsed algorithm
 2. Grain **merging and cleaning**
 3. Grain **fitting by geometrical models** including ellipsoids and cuboids
+
+## Warning
+
+### ellipsoid.implicit_to_explicit
+
+When computing
+
+center, radii, quaternions, rotation_matrix, ellipsoid_parameters = (
+    ellipsoid.fit_ellipsoid_to_grain(xyz[stacks[0]]))
+
+and then trying to launch
+
+ellipsoid.implicit_to_explicit(ellipsoid_parameters)
+
+twi times consecutively, the first time it works, the second time it does not work.

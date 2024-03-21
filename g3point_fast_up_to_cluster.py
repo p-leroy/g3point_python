@@ -8,6 +8,9 @@ from g3point_python import Parameters, tools
 from g3point_python.detrend import rotate_point_cloud_plane, orient_normals
 from g3point_python.cluster import clean_labels, cluster
 from g3point_python.segment import segment_labels
+from g3point_python.visualization import show_clouds
+
+import ellipsoid
 
 # Inputs
 dir_ = r"C:\DATA\PhilippeSteer\G3Point"
@@ -18,9 +21,9 @@ cloud_ardeche = os.path.join(dir_, "Ardeche_2021_inter_survey_C2.part.laz")
 ini = r"C:\dev\python\g3point_python\params.ini"
 
 # Load data
-xyz = tools.load_data(cloud_test_laz)
+xyz = tools.load_data(cloud)
 # Remove min values
-mins = np.amin(xyz, axis=0) * 0
+mins = np.amin(xyz, axis=0)  # WARNING: done in the Matlab code
 xyz = xyz - mins
 
 params = Parameters.Parameters(ini)
@@ -61,13 +64,26 @@ normals = orient_normals(xyz, np.asarray(pcd.normals), sensor_center)
 labels, nlabels, labelsnpoint, stacks, ndon, sink_indexes = segment_labels(xyz_detrended, params.knn, neighbors_indexes)
 
 # Cluster labels
-[labels, nlabels, stacks, sink_indexes] = cluster(xyz, params, neighbors_indexes, labels, stacks, ndon,
-                                                  sink_indexes, surface, normals,
-                                                  version='cpp', condition_flag=None)
+# [labels, nlabels, stacks, sink_indexes] = cluster(xyz, params, neighbors_indexes, labels, stacks, ndon,
+#                                                   sink_indexes, surface, normals,
+#                                                   version='cpp', condition_flag=None)
 
 # Clean labels
 # [labels, nlabels, stacks, sink_indexes] = clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, normals,
 #                                                        version='cpp', condition_flag='symmetrical_strict')
+
+#%%
+# coeff4 = 1 / 0.6608698784014869
+center, radii, quaternions, rotation_matrix, ellipsoid_parameters = (
+    ellipsoid.fit_ellipsoid_to_grain(xyz[stacks[45]]))
+
+#%%
+c, r, q, r_m = ellipsoid.implicit_to_explicit(ellipsoid_parameters)
+
+#%%
+matlab_rotation_matrix = np.array([[-0.9264, -0.3668, 0.0854],
+                                   [-0.2170, 0.3345, -0.9171],
+                                   [0.3078, -0.8681, -0.3894]])
 
 #%%
 tools.save_data_with_colors(cloud, xyz, mins, stacks, labels, '_G3POINT')

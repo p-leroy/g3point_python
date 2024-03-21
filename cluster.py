@@ -247,8 +247,8 @@ def cluster(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_indexes, 
 
     sink_indexes = get_sink_indexes(stacks, xyz)
 
-    if not check_stacks(stacks, len(labels)):
-        raise "[cluster] stacks are not valid"
+    if check_stacks(stacks, len(labels)):
+        print("[cluster] stacks are valid")
 
     print(
         f'[cluster_labels] check normals at the borders: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')
@@ -321,5 +321,8 @@ def clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, normals,
     print(f'[clean_labels] remove flattish labels: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')
 
     labels[labels == 0] = -1
+
+    if check_stacks(stacks, len(labels)):
+        print("[clean_labels] stacks are valid")
 
     return labels, nlabels, stacks, sink_indexes
