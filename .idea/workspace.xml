@@ -5,12 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc0f497f-3735-4e9e-bf11-aebe186f54dc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/ellipsoid.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/plot_ellipsoid.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/cluster.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/g3point.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ellipsoid.py" beforeDir="false" afterPath="$PROJECT_DIR$/ellipsoid.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/g3point_fast_up_to_cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point_fast_up_to_cluster.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools.py" afterDir="false" />
     </list>
@@ -72,7 +68,7 @@
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;PyConsoleConfigurable.Python Console&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.folding&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -157,7 +153,15 @@
       <workItem from="1710747967954" duration="2270000" />
       <workItem from="1710796964276" duration="596000" />
       <workItem from="1710920146420" duration="20260000" />
-      <workItem from="1711004727923" duration="28075000" />
+      <workItem from="1711004727923" duration="28443000" />
+      <workItem from="1711091740335" duration="13955000" />
+      <workItem from="1711133155531" duration="2515000" />
+      <workItem from="1711136158353" duration="231000" />
+      <workItem from="1711232267226" duration="4173000" />
+      <workItem from="1711351596874" duration="14942000" />
+      <workItem from="1711380478219" duration="4349000" />
+      <workItem from="1711458043098" duration="4693000" />
+      <workItem from="1711562182624" duration="739000" />
     </task>
     <servers />
   </component>
@@ -226,13 +230,18 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/ellipsoid.py</url>
-          <line>155</line>
-          <option name="timeStamp" value="89" />
+          <line>262</line>
+          <option name="timeStamp" value="91" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/ellipsoid.py</url>
-          <line>108</line>
-          <option name="timeStamp" value="90" />
+          <line>211</line>
+          <option name="timeStamp" value="101" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/ellipsoid.py</url>
+          <line>166</line>
+          <option name="timeStamp" value="102" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

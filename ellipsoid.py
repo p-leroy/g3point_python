@@ -110,7 +110,11 @@ def implicit_to_explicit(p):
 
     # check for positive definiteness
     # will raise LinAlgError if the decomposition fails, for example, if a is not positive-definite
-    _ = np.linalg.cholesky(-s[3, 3] * s[0: 3, 0: 3])
+    try:
+        _ = np.linalg.cholesky(-s[3, 3] * s[0: 3, 0: 3])
+    except np.linalg.LinAlgError:
+        print("[implicit_to_explicit] in cholesky 'numpy.linalg.LinAlgError: Matrix is not positive definite'")
+        return None, None, None, None
 
     # solve the eigen problem
     eigenvalues, eigenvectors = np.linalg.eig(s[0: 3, 0: 3])
@@ -199,6 +203,8 @@ def fit_ellipsoid_to_grain(xyz, method='direct'):
         ellipsoid_parameters = direct_fit(scale * (xyz - np.mean(xyz, axis=0)))
         # Get the explicit parameters
         [center, radii, quaternions, rotation_matrix] = implicit_to_explicit(ellipsoid_parameters)
+        if center is None:
+            return None, None, None, None, None
     else:
         raise ValueError('Unknown method')
 

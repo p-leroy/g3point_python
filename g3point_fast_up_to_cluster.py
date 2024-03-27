@@ -21,10 +21,11 @@ cloud_ardeche = os.path.join(dir_, "Ardeche_2021_inter_survey_C2.part.laz")
 ini = r"C:\dev\python\g3point_python\params.ini"
 
 # Load data
-xyz = tools.load_data(cloud)
+xyz = tools.load_data(cloud, dtype=np.float32)
 # Remove min values
-mins = np.amin(xyz, axis=0)  # WARNING: done in the Matlab code
-xyz = xyz - mins
+if True:
+    mins = np.amin(xyz, axis=0)  # WARNING: done in the Matlab code
+    xyz = xyz - mins
 
 params = Parameters.Parameters(ini)
 
@@ -75,16 +76,37 @@ labels, nlabels, labelsnpoint, stacks, ndon, sink_indexes = segment_labels(xyz_d
 #%%
 # coeff4 = 1 / 0.6608698784014869
 center, radii, quaternions, rotation_matrix, ellipsoid_parameters = (
-    ellipsoid.fit_ellipsoid_to_grain(xyz[stacks[45]]))
-
-#%%
-c, r, q, r_m = ellipsoid.implicit_to_explicit(ellipsoid_parameters)
-
-#%%
-matlab_rotation_matrix = np.array([[-0.9264, -0.3668, 0.0854],
-                                   [-0.2170, 0.3345, -0.9171],
-                                   [0.3078, -0.8681, -0.3894]])
+    ellipsoid.fit_ellipsoid_to_grain(xyz[stacks[351]]))
 
 #%%
 tools.save_data_with_colors(cloud, xyz, mins, stacks, labels, '_G3POINT')
 tools.save_data_with_colors(cloud, xyz[sink_indexes, :], mins, stacks, np.arange(len(stacks)), '_G3POINT_SINKS')
+
+#%% show initial segmentation
+colors = np.random.rand(len(stacks), 3)[labels, :]
+pcd.colors = o3d.utility.Vector3dVector(colors)
+# build pcd_sinks
+pcd_sinks = o3d.geometry.PointCloud()
+pcd_sinks.points = o3d.utility.Vector3dVector(xyz_detrended[sink_indexes, :])
+pcd_sinks.paint_uniform_color(np.array([1., 0., 0.]))
+
+#%% Build an ellipsoid as a cloud
+xx, yy, zz = ellipsoid.ellipsoid(0, 0, 0, radii[0], radii[1], radii[2])
+xyz_grain = np.c_[xx.flatten(), yy.flatten(), zz.flatten()] @ rotation_matrix + center.reshape(1, -1)
+
+grain = o3d.geometry.PointCloud()
+grain.points = o3d.utility.Vector3dVector(xyz_grain)
+grain.paint_uniform_color((0, 0, 0))
+grain.estimate_normals()
+grain.orient_normals_consistent_tangent_plane(1)
+
+mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(grain, depth=9)
+# radii_ball = [0.1, 0.2]
+# mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(grain, o3d.utility.DoubleVector(radii))
+# alpha = 1
+# mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_alpha_shape(grain, alpha)
+mesh.paint_uniform_color((1, 1, 1))
+mesh.compute_vertex_normals()
+
+#%%
+o3d.visualization.draw([pcd, grain, mesh])

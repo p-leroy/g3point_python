@@ -61,7 +61,7 @@ def save_data_with_colors(cloud, xyz, mins, stacks, labels, tag):
     las.write(filename)
 
 
-def load_data(file):
+def load_data(file, dtype=None):
     ext = os.path.splitext(file)[-1]
     if ext == '.ply':
         pcd_orig = o3d.io.read_point_cloud(file).points
@@ -71,6 +71,9 @@ def load_data(file):
         xyz = np.c_[las_data.X, las_data.Y, las_data.Z]
     else:
         raise TypeError('unhandled extension ' + ext)
+
+    if dtype is not None:
+        xyz = xyz.astype(dtype)
 
     return xyz
 
