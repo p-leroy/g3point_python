@@ -6,9 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="bc0f497f-3735-4e9e-bf11-aebe186f54dc" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ellipsoid.py" beforeDir="false" afterPath="$PROJECT_DIR$/ellipsoid.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/g3point_fast_up_to_cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point_fast_up_to_cluster.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/visualization.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,6 +162,11 @@
       <workItem from="1711380478219" duration="4349000" />
       <workItem from="1711458043098" duration="4693000" />
       <workItem from="1711562182624" duration="739000" />
+      <workItem from="1711634948906" duration="1273000" />
+      <workItem from="1712209473328" duration="28000" />
+      <workItem from="1713170486646" duration="4292000" />
+      <workItem from="1713778701250" duration="9000" />
+      <workItem from="1713787510251" duration="10449000" />
     </task>
     <servers />
   </component>

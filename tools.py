@@ -31,16 +31,29 @@ def get_random_colors(number_of_colors, version=None):
     return rgb
 
 
-def save_data_with_colors(cloud, xyz, mins, stacks, labels, tag):
+def save_data_with_colors(cloud, xyz, stacks, labels, tag):
     head, tail = os.path.split(cloud)
     root, ext = os.path.splitext(tail)
     filename = os.path.join(head, root + tag + '.laz')
 
-    las = laspy.create(point_format=7, file_version='1.4')
+    # scale data to avoid loss of accuracy with LAS format
+    x, y, z = np.split(xyz, 3, axis=1)
 
-    las.x = xyz[:, 0] + mins[0]
-    las.y = xyz[:, 1] + mins[1]
-    las.z = xyz[:, 2] + mins[2]
+    # 1. Create a new header
+    header = laspy.LasHeader(point_format=7, version="1.4")
+    header.x_offset = (np.amax(x) + np.amin(x)) / 2
+    header.y_offset = (np.amax(y) + np.amin(y)) / 2
+    header.z_offset = (np.amax(z) + np.amin(z)) / 2
+    ranges = np.max(xyz, axis=0) - np.min(xyz, axis=0)
+    scales = ranges / (2**32 - 2)  # 2**32 - 1 does not work
+    header.scales = scales
+
+    # 2. Create a Las
+    las = laspy.LasData(header)
+
+    las.x = np.squeeze(x[:])
+    las.y = np.squeeze(y[:])
+    las.z = np.squeeze(z[:])
 
     # set random colors
     # rng = np.random.default_rng(42)
@@ -59,6 +72,8 @@ def save_data_with_colors(cloud, xyz, mins, stacks, labels, tag):
 
     print(f"save {filename}")
     las.write(filename)
+
+    return filename
 
 
 def load_data(file, dtype=None):

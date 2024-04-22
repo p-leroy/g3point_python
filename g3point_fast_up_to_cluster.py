@@ -21,7 +21,7 @@ cloud_ardeche = os.path.join(dir_, "Ardeche_2021_inter_survey_C2.part.laz")
 ini = r"C:\dev\python\g3point_python\params.ini"
 
 # Load data
-xyz = tools.load_data(cloud, dtype=np.float32)
+xyz = tools.load_data(cloud)
 # Remove min values
 if True:
     mins = np.amin(xyz, axis=0)  # WARNING: done in the Matlab code
@@ -74,13 +74,11 @@ labels, nlabels, labelsnpoint, stacks, ndon, sink_indexes = segment_labels(xyz_d
 #                                                        version='cpp', condition_flag='symmetrical_strict')
 
 #%%
-# coeff4 = 1 / 0.6608698784014869
-center, radii, quaternions, rotation_matrix, ellipsoid_parameters = (
-    ellipsoid.fit_ellipsoid_to_grain(xyz[stacks[351]]))
-
-#%%
-tools.save_data_with_colors(cloud, xyz, mins, stacks, labels, '_G3POINT')
-tools.save_data_with_colors(cloud, xyz[sink_indexes, :], mins, stacks, np.arange(len(stacks)), '_G3POINT_SINKS')
+# do not forget to add mins if needed
+g3point = tools.save_data_with_colors(cloud, xyz + mins,
+                                  stacks, labels, '_G3POINT')
+g3point_sinks = tools.save_data_with_colors(cloud, xyz[sink_indexes, :] + mins,
+                                  stacks, np.arange(len(stacks)), '_G3POINT_SINKS')
 
 #%% show initial segmentation
 colors = np.random.rand(len(stacks), 3)[labels, :]
@@ -89,6 +87,11 @@ pcd.colors = o3d.utility.Vector3dVector(colors)
 pcd_sinks = o3d.geometry.PointCloud()
 pcd_sinks.points = o3d.utility.Vector3dVector(xyz_detrended[sink_indexes, :])
 pcd_sinks.paint_uniform_color(np.array([1., 0., 0.]))
+
+#%%
+# coeff4 = 1 / 0.6608698784014869
+center, radii, quaternions, rotation_matrix, ellipsoid_parameters = (
+    ellipsoid.fit_ellipsoid_to_grain(xyz[stacks[351]]))
 
 #%% Build an ellipsoid as a cloud
 xx, yy, zz = ellipsoid.ellipsoid(0, 0, 0, radii[0], radii[1], radii[2])
