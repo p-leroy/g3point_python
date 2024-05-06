@@ -2,7 +2,7 @@ from time import perf_counter
 
 import numpy as np
 
-from tools import check_stacks
+from .misc import check_stacks
 
 
 def add_to_stack(index, n_donors, donors, stack):

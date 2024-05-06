@@ -5,10 +5,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc0f497f-3735-4e9e-bf11-aebe186f54dc" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/tools/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/Parameters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/cluster.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/detrend.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/detrend.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ellipsoid.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/ellipsoid.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/g3point.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/g3point_fast.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point_fast.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/g3point_fast_up_to_cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point_fast_up_to_cluster.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/visualization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/params.ini" beforeDir="false" afterPath="$PROJECT_DIR$/data/params.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plot_ellipsoid.py" beforeDir="false" afterPath="$PROJECT_DIR$/plot_ellipsoid.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/segment.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/segment.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_vec2rot.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_vec2rot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tmp.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/misc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/visualization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lidar_platform/config/test_configuration.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lidar_platform/config/test_configuration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lidar_platform/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../lidar_platform/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lidar_platform/tools/ReverseTiling.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lidar_platform/tools/ReverseTiling.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lidar_platform/tools/cc.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lidar_platform/tools/cc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lidar_platform/tools/clustering_dbscan.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lidar_platform/tools/clustering_dbscan.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lidar_platform/topo_bathymetry/poisson_reconstruction.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lidar_platform/topo_bathymetry/poisson_reconstruction.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,7 +81,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/dev/python/lidar_platform&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/dev/python/g3point_python/tools&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -80,6 +98,12 @@
         <option name="myModuleName" value="g3point_python" />
       </console-settings>
     </option>
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\dev\python\g3point_python\tools" />
+      <recent name="C:\dev\python\g3point_python\data" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
@@ -167,6 +191,10 @@
       <workItem from="1713170486646" duration="4292000" />
       <workItem from="1713778701250" duration="9000" />
       <workItem from="1713787510251" duration="10449000" />
+      <workItem from="1714715603300" duration="101000" />
+      <workItem from="1714738449700" duration="3750000" />
+      <workItem from="1714981150247" duration="699000" />
+      <workItem from="1715006824565" duration="549000" />
     </task>
     <servers />
   </component>
@@ -224,27 +252,27 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/cluster.py</url>
+          <url>file://$PROJECT_DIR$/tools/cluster.py</url>
           <line>108</line>
           <option name="timeStamp" value="49" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/cluster.py</url>
+          <url>file://$PROJECT_DIR$/tools/cluster.py</url>
           <line>322</line>
           <option name="timeStamp" value="56" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/ellipsoid.py</url>
+          <url>file://$PROJECT_DIR$/tools/ellipsoid.py</url>
           <line>262</line>
           <option name="timeStamp" value="91" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/ellipsoid.py</url>
+          <url>file://$PROJECT_DIR$/tools/ellipsoid.py</url>
           <line>211</line>
           <option name="timeStamp" value="101" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/ellipsoid.py</url>
+          <url>file://$PROJECT_DIR$/tools/ellipsoid.py</url>
           <line>166</line>
           <option name="timeStamp" value="102" />
         </line-breakpoint>

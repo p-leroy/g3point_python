@@ -27,7 +27,7 @@ def explicit_to_implicit(center, radii, rotation_matrix):
 
     xc, yc, zc = center
     
-    xrr, yrr, zrr = 1/radii
+    xrr, yrr, zrr = 1 / radii
 
     rotation_matrix_flattened = rotation_matrix.flatten('F')
     r11 = rotation_matrix_flattened[0]
@@ -109,11 +109,11 @@ def implicit_to_explicit(p):
     s = t @ q @ t.T
 
     # check for positive definiteness
-    # will raise LinAlgError if the decomposition fails, for example, if a is not positive-definite
+    # will raise LinAlgError if the decomposition fails, for example, if the matrix is not positive-definite
     try:
         _ = np.linalg.cholesky(-s[3, 3] * s[0: 3, 0: 3])
     except np.linalg.LinAlgError:
-        print("[implicit_to_explicit] in cholesky 'numpy.linalg.LinAlgError: Matrix is not positive definite'")
+        print("[implicit_to_explicit] in cholesky 'numpy.linalg.LinAlgError: Matrix is not positive-definite'")
         return None, None, None, None
 
     # solve the eigen problem

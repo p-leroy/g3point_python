@@ -2,9 +2,14 @@ import numpy as np
 
 
 def fit_plane(xyz):
-    # Fit a plane of coordinates z = ax + by + c using a singular value decomposition
+    """
+    Fit a plane of coordinates z = ax + by + c using a singular value decomposition
     # see plane_fit by Kevin Moerman
     # https://fr.mathworks.com/matlabcentral/fileexchange/22042-plane_fit
+    :param xyz: coordinates of the points to fit
+    :return: a, b, c, dist_signed
+    """
+
     centroid = np.mean(xyz, axis=0)
     xyz_c = xyz - centroid  # centered coordinates
     U, S, Vh = np.linalg.svd(xyz_c, full_matrices=False)  # singular value decomposition
@@ -50,7 +55,7 @@ def orient_normals(points, normals, sensor_center):
     return normals
 
 
-def get_skew_symmetric_cross_prduct_matrix(v):
+def get_skew_symmetric_cross_product_matrix(v):
 
     skew = np.array([
         [0, -v[2], v[1]],
@@ -61,8 +66,15 @@ def get_skew_symmetric_cross_prduct_matrix(v):
 
 
 def vec2rot(a, b, method='Rik'):
-    # from "Calculate Rotation Matrix to align Vector A to Vector Bin 3D?" on math.stackexchange.com
+    """
+    Calculate a rotation matrix which aligns vector a on vector b
+    from "Calculate Rotation Matrix to align Vector A to Vector B in 3D?" on math.stackexchange.com
     # https://math.stackexchange.com/questions/180418/calculate-rotation-matrix-to-align-vector-a-to-vector-b-in-3d/180436#180436
+    :param a: the source vector
+    :param b: the destination vectorr
+    :param method: 'Rik' or 'Kjetil' (the names of the contributors on stackexchange)
+    :return: a 3 x 3 rotation matrix
+    """
 
     # normalize a and b
     a = a / np.linalg.norm(a)
@@ -73,14 +85,14 @@ def vec2rot(a, b, method='Rik'):
     c = np.dot(a, b)  # cosine of angle
 
     if method == 'Rik':
-        skew = get_skew_symmetric_cross_prduct_matrix(v)
+        skew = get_skew_symmetric_cross_product_matrix(v)
         rotation = np.eye(3) + skew + skew @ skew * (1 - c) / s**2
 
-    if method == 'Kjetil':  # a and be have to be normalized
+    if method == 'Kjetil':  # a and be shall be normalized
         G = np.array([[c, -s, 0],
                       [s, c, 0],
                       [0, 0, 1]])
-        Fi = np.c_[a, (b - c * a) / np.linalg.norm(b - c * a), np.cross(b,a)]
+        Fi = np.c_[a, (b - c * a) / np.linalg.norm(b - c * a), np.cross(b, a)]
         rotation = Fi @ G @ np.linalg.inv(Fi)
 
     return rotation

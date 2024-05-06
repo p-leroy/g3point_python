@@ -5,10 +5,10 @@ import open3d as o3d
 from scipy.spatial import KDTree
 
 from g3point_python import tools
-from g3point_python.detrend import rotate_point_cloud_plane, orient_normals
-from g3point_python.cluster import clean_labels, cluster
-from g3point_python.segment import segment_labels
-from g3point_python.visualization import show_clouds
+from tools.detrend import rotate_point_cloud_plane, orient_normals
+from tools.cluster import clean_labels, cluster
+from tools.segment import segment_labels
+from tools.visualization import show_clouds
 
 # Inputs
 dir_ = r"C:\DATA\PhilippeSteer\G3Point"

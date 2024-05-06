@@ -1,7 +1,5 @@
 import numpy as np
 
-from g3point_python.detrend import vec2rot
-
 #%% first test
 
 a = np.array([1, 0, 0])
@@ -15,7 +13,7 @@ G = np.array([[c, -s, 0],
               [s, c, 0],
               [0, 0, 1]])
 
-Fi = np.c_[a, (b - c * a) / np.linalg.norm(b - c * a), np.cross(b,a)]
+Fi = np.c_[a, (b - c * a) / np.linalg.norm(b - c * a), np.cross(b, a)]
 
 U = Fi @ G @ np.linalg.inv(Fi)
 
@@ -37,7 +35,7 @@ G = np.array([[c, -s, 0],
               [s, c, 0],
               [0, 0, 1]])
 
-Fi = np.c_[a, (b - c * a) / np.linalg.norm(b - c * a), np.cross(b,a)]
+Fi = np.c_[a, (b - c * a) / np.linalg.norm(b - c * a), np.cross(b, a)]
 
 U = Fi @ G @ np.linalg.inv(Fi)
 

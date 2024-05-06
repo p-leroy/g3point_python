@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from ellipsoid import ellipsoid
+from tools.ellipsoid import ellipsoid
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
