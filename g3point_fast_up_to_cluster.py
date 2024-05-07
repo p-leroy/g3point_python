@@ -4,11 +4,9 @@ import numpy as np
 import open3d as o3d
 from scipy.spatial import KDTree
 
-from g3point_python import tools
-from tools.detrend import rotate_point_cloud_plane, orient_normals
-from tools.segment import segment_labels
-
-from tools import ellipsoid, Parameters
+from g3point import ellipsoid, G3PointParameters, tools
+from g3point.detrend import rotate_point_cloud_plane, orient_normals
+from g3point.segment import segment_labels
 
 # Inputs
 dir_ = r"C:\DATA\PhilippeSteer\G3Point"

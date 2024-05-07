@@ -4,11 +4,11 @@ import numpy as np
 import open3d as o3d
 from scipy.spatial import KDTree
 
-from g3point_python import tools
-from tools.detrend import rotate_point_cloud_plane, orient_normals
-from tools.cluster import clean_labels, cluster
-from tools.segment import segment_labels
-from tools.visualization import show_clouds
+import g3point
+from g3point.detrend import rotate_point_cloud_plane, orient_normals
+from g3point.cluster import clean_labels, cluster
+from g3point.segment import segment_labels
+from g3point.visualization import show_clouds
 
 # Inputs
 dir_ = r"C:\DATA\PhilippeSteer\G3Point"
@@ -18,11 +18,11 @@ cloud_ardeche = os.path.join(dir_, "Ardeche_2021_inter_survey_C2.part.laz")
 ini = r"C:\dev\python\g3point_python\params.ini"
 
 # Load data
-xyz = tools.load_data(cloud)
+xyz = g3point.load_data(cloud)
 # Remove min values
 xyz = xyz - np.amin(xyz, axis=0)
 
-params = tools.read_parameters(ini)
+params = g3point.read_parameters(ini)
 
 # Rotate and detrend the point cloud
 if params.rot_detrend:
