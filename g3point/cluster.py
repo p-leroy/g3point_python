@@ -246,7 +246,7 @@ def cluster(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_indexes, 
 
     nlabels = len(np.unique(labels))
 
-    sink_indexes = get_sink_indexes(stacks, xyz)
+    new_sink_indexes = get_sink_indexes(stacks, xyz)
 
     if check_stacks(stacks, len(labels)):
         print("[cluster] stacks are valid")
@@ -254,7 +254,7 @@ def cluster(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_indexes, 
     print(
         f'[cluster_labels] check normals at the borders: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')
 
-    return labels, stacks, sink_indexes
+    return labels, stacks, new_sink_indexes
 
 
 def clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, normals,
