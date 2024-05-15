@@ -5,19 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc0f497f-3735-4e9e-bf11-aebe186f54dc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/NOTES.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/debug/A.csv" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/data/debug/Dist.csv" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/data/debug/Nneigh.csv" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/data/debug/py_Aangle.data.npy" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/data/debug/symmetrical_condition.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/debug_compare_matrices.py" beforeDir="false" afterPath="$PROJECT_DIR$/debug_compare_matrices.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/g3point/G3Point.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point/G3Point.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/g3point/cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point/cluster.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/g3point/segment.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point/segment.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_g3point.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_g3point.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
