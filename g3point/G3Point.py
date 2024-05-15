@@ -38,7 +38,6 @@ class G3Point:
 
         # Variables which will be set during the initial_segmentation call
         self.initial_labels = None
-        self.initial_labelsnpoint = None
         self.initial_stacks = None
         self.ndon = None
         self.initial_sink_indexes = None
@@ -90,10 +89,10 @@ class G3Point:
 
         # Initial segmentation
         res = segment_labels(self.xyz, self.params.knn, neighbors_indexes)
-        self.initial_labels, self.initial_labelsnpoint, self.initial_stacks, self.ndon, self.initial_sink_indexes = res
+        self.initial_labels, self.initial_stacks, self.ndon, self.initial_sink_indexes = res
 
         self.labels = np.copy(self.initial_labels)
-        self.stacks = self.initial_stacks.copy
+        self.stacks = self.initial_stacks.copy()
         self.sink_indexes = np.copy(self.initial_sink_indexes)
 
     def cluster(self, version='cpp', condition_flag=None):
@@ -112,7 +111,8 @@ class G3Point:
 
     def clean(self, version='cpp', condition_flag=None):
         """
-        
+        Default configuration is 'cpp' 'symmetrical_strict'
+        'cpp' forces the condition_flag value to 'symmetrical_strict'
         :param version: 'matlab' 'matlab_dbscan' 'cpp' 'custom':
         :param condition_flag: 'lower' 'upper' 'symmetrical_large' 'symmetrical_strict'
         :return:

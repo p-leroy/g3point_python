@@ -40,7 +40,6 @@ def philippe_steer_stack_building(receivers, local_maximum_indexes, knn):
 
     # build the stacks
     labels = np.zeros(n_points, dtype=int)
-    labelsnpoint = np.zeros(n_points)
     stacks = []
 
     for k, ij in enumerate(local_maximum_indexes):
@@ -48,12 +47,11 @@ def philippe_steer_stack_building(receivers, local_maximum_indexes, knn):
         add_to_stack(ij, ndon, donor, stack)  # recursive function
         stacks.append(stack)
         labels[stack] = k
-        labelsnpoint[stack] = len(stack)
 
     end = perf_counter()
     print(f'Philippe Steer {end - start}')
 
-    return stacks, labels, labelsnpoint, ndon
+    return stacks, labels, ndon
 
 
 def braun_willett_stack_building(receivers, local_maximum_indexes):
@@ -82,7 +80,6 @@ def braun_willett_stack_building(receivers, local_maximum_indexes):
         delta[i] = delta[i + 1] - di[i]
     stacks = []
     labels = np.zeros(n_points, dtype=int)
-    points_per_label = np.zeros(n_points, dtype=int)
 
     # build the stacks
     for k, ij in enumerate(local_maximum_indexes):
@@ -90,12 +87,11 @@ def braun_willett_stack_building(receivers, local_maximum_indexes):
         add_to_stack_bw(ij, delta, Di, stack, ij)  # recursive function
         stacks.append(stack)
         labels[stack] = k
-        points_per_label[stack] = len(stack)
 
     end = perf_counter()
     print(f'[braun_willett_stack_building] {end - start: .2f} s')
 
-    return stacks, labels, points_per_label, di
+    return stacks, labels, di
 
 
 def segment_labels(xyz, knn, neighbors_indexes, braun_willett=True):
@@ -120,13 +116,13 @@ def segment_labels(xyz, knn, neighbors_indexes, braun_willett=True):
     receivers[local_maximum_indexes] = local_maximum_indexes
 
     if braun_willett:
-        stacks, labels, labelsnpoint, ndon = braun_willett_stack_building(receivers, local_maximum_indexes)
+        stacks, labels, ndon = braun_willett_stack_building(receivers, local_maximum_indexes)
     else:
-        stacks, labels, labelsnpoint, ndon = philippe_steer_stack_building(receivers, local_maximum_indexes, knn)
+        stacks, labels, ndon = philippe_steer_stack_building(receivers, local_maximum_indexes, knn)
 
     if check_stacks(stacks, len(labels)):
         print(f"[segment_labels] initial segmentation: {len(stacks)} labels")
     else:
         raise ValueError("[segment_labels] stacks are not valid")
 
-    return labels, labelsnpoint, stacks, ndon, local_maximum_indexes
+    return labels, stacks, ndon, local_maximum_indexes

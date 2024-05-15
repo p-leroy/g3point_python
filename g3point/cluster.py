@@ -151,6 +151,7 @@ def merge_cpp(labels, stacks, condition, condition_flag=None):
                 continue
 
             if not condition[label, otherLabel]:
+
                 if new_labels[otherLabel] != -1:  # the other label has already been merged
                     if new_labels[label] > new_labels[otherLabel]:  # merge label in OtherLabel
                         # add the label stack to the otherLabel stack
@@ -166,6 +167,7 @@ def merge_cpp(labels, stacks, condition, condition_flag=None):
                         new_stacks[new_labels[otherLabel]] = []
                         # update the label
                         new_labels[otherLabel] = new_labels[label]
+
                 else:  # merge otherLabel and label
                     new_stacks[new_labels[label]] += stacks[otherLabel]
                     new_labels[otherLabel] = new_labels[label]
@@ -179,7 +181,7 @@ def merge_cpp(labels, stacks, condition, condition_flag=None):
     new_stacks = [stack for stack in new_stacks if stack != []]
 
     # redefine labels
-    new_labels = np.ones(labels.shape, dtype = int) * (-1)
+    new_labels = np.ones(labels.shape, dtype=int) * (-1)
     for k, stack in enumerate(new_stacks):
         for index in stack:
             new_labels[index] = k
@@ -188,7 +190,7 @@ def merge_cpp(labels, stacks, condition, condition_flag=None):
 
 
 def cluster(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_indexes, surface, normals,
-            version='matlab', condition_flag=None):
+            version='cpp', condition_flag=None):
 
     print(f'[cluster_labels]')
     nlabels = len(np.unique(labels))
@@ -221,53 +223,51 @@ def cluster(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_indexes, 
     # Merge labels if:
     # => sinks are close to each other (Dist == 1)
     # => sinks are neighbours (Nneigh == 1)
-    # => normals are similar
+    # => normals are similar (Aangle < params.max_angle1)
     if version == 'matlab':
-        labels, stacks = merge_cpp(
+        new_labels, new_stacks = merge_cpp(
             labels, stacks,
             (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1),
             condition_flag=condition_flag)
     elif version == 'matlab_dbscan':
-        labels, stacks = merge_labels_dbscan(
+        new_labels, new_stacks = merge_labels_dbscan(
             labels, stacks,
             (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1))
     elif version == 'cpp':
-        labels, stacks = merge_cpp(
+        new_labels, new_stacks = merge_cpp(
             labels, stacks,
             (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1) | (np.isnan(Aangle)),
             condition_flag='symmetrical_strict')
     elif version == 'custom':
-        labels, stacks = merge_cpp(
+        new_labels, new_stacks = merge_cpp(
             labels, stacks,
             (Dist < 1) | (Nneigh < 1) | (Aangle > params.max_angle1) | (np.isnan(Aangle)),
             condition_flag=condition_flag)
     else:
         raise ValueError("[cluster_labels] precise a version 'cpp' 'matlab' 'matlab_dbscan' 'custom'")
 
-    nlabels = len(np.unique(labels))
+    nlabels = len(np.unique(new_labels))
 
-    new_sink_indexes = get_sink_indexes(stacks, xyz)
+    new_sink_indexes = get_sink_indexes(new_stacks, xyz)
 
-    if check_stacks(stacks, len(labels)):
+    if check_stacks(stacks, len(new_labels)):
         print("[cluster] stacks are valid")
 
     print(
         f'[cluster_labels] check normals at the borders: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')
 
-    return labels, stacks, new_sink_indexes
+    return new_labels, new_stacks, new_sink_indexes
 
 
 def clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, normals,
-                 version='matlab', condition_flag=None):
+                 version='cpp', condition_flag=None):
 
     print('[clean_labels]')
     nlabels_start = len(np.unique(labels))
 
     Aangle = compute_mean_angle(params, labels, neighbors_indexes, ndon, normals, version=version)
 
-    # Merge grains if:
-    # =>
-    # => normals are similar
+    # Merge grains if normals are similar
     if version == 'matlab':
         labels, stacks = merge_cpp(
             labels, stacks,
@@ -300,7 +300,7 @@ def clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, normals,
     nlabels_start = nlabels
 
     # remove small labels
-    condition = (nstack >= params.n_min)
+    condition = (nstack > params.n_min)
     labels, stacks, sink_indexes = keep_labels(labels, stacks, condition, sink_indexes)
 
     nlabels = len(np.unique(labels))

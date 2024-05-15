@@ -18,17 +18,58 @@ This algorithm relies on 3 main phases:
 2. Grain **merging and cleaning**
 3. Grain **fitting by geometrical models** including ellipsoids and cuboids
 
-## Warning
+## How it works
 
-### ellipsoid.implicit_to_explicit
+First you have to import the ```g3point``` module.  
+**Note:** it's up to you to configure correctly the python path for your 
+system to be able to find it.
 
-When computing
+```
+import g3point
+```
 
-center, radii, quaternions, rotation_matrix, ellipsoid_parameters = (
-    ellipsoid.fit_ellipsoid_to_grain(xyz[stacks[0]]))
+To instantiate a G3Point object, you will need a point cloud, in las or ply and an ini file (see the example in the 
+```data``` 
+section).
 
-and then trying to launch
+```
+g3point_data = g3point.G3Point(cloud, ini)
+```
 
-ellipsoid.implicit_to_explicit(ellipsoid_parameters)
+### Initial segmentation
 
-twi times consecutively, the first time it works, the second time it does not work.
+The initial segmentation is done once and for all, it is not modified by the clustering or by the cleaning. IT sets 
+the following attributes:
+
+- ```initial_labels```
+- ```initial_sink_indexes```
+- ```initial_stacks```
+
+At the end of the initial segmentation, the variables ```labels```, ```sink_indexes``` and ```stacks``` are initialized to their 
+```initial_``` counterparts.
+
+```
+g3point_data.initial_segmentation()
+```
+
+### Cluster
+
+The clustering is based on the initial segmentation.
+
+```
+g3point_data.cluster()
+```
+
+### Clean
+
+The cleaning is based on the current state of the labels
+
+```
+g3point_data.clean()
+```
+
+### Save the results
+
+```
+out, out_sinks = g3point_data.save()
+```

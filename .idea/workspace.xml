@@ -5,9 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc0f497f-3735-4e9e-bf11-aebe186f54dc" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/NOTES.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comparison_with_matlab.py" beforeDir="false" afterPath="$PROJECT_DIR$/debug_comparison_with_matlab.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/debug/A.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/debug/Dist.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/debug/Nneigh.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/debug/py_Aangle.data.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/debug/symmetrical_condition.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/debug_compare_matrices.py" beforeDir="false" afterPath="$PROJECT_DIR$/debug_compare_matrices.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/g3point/G3Point.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point/G3Point.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/g3point/cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point/cluster.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/g3point/segment.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point/segment.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_g3point.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_g3point.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,21 +66,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/dev/python/g3point_python/tools",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/dev/python/g3point_python/tools&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
       <console-settings custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;%load_ext autoreload&#10;%autoreload 2&#10;%matplotlib qt5&#10;" module-name="g3point_python" is-module-sdk="true">
@@ -178,7 +189,9 @@
       <workItem from="1715006824565" duration="862000" />
       <workItem from="1715060537204" duration="9145000" />
       <workItem from="1715081551688" duration="10657000" />
-      <workItem from="1715505641118" duration="2003000" />
+      <workItem from="1715505641118" duration="2594000" />
+      <workItem from="1715754145208" duration="12193000" />
+      <workItem from="1715812316641" duration="560000" />
     </task>
     <servers />
   </component>
@@ -262,8 +275,23 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/g3point/cluster.py</url>
-          <line>260</line>
+          <line>262</line>
           <option name="timeStamp" value="103" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/g3point/cluster.py</url>
+          <line>280</line>
+          <option name="timeStamp" value="104" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/g3point/cluster.py</url>
+          <line>135</line>
+          <option name="timeStamp" value="106" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/g3point/cluster.py</url>
+          <line>175</line>
+          <option name="timeStamp" value="107" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

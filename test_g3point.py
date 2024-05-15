@@ -13,10 +13,10 @@ g3point_data = g3point.G3Point(cloud, ini, remove_mins=False)
 g3point_data.initial_segmentation()
 
 #%% Cluster labels
-g3point_data.cluster(version='cpp', condition_flag='symmetrical_strict')
+g3point_data.cluster(version='cpp')
 
 #%% Clean labels
-g3point_data.clean()
+g3point_data.clean(version='cpp')
 
 #%% Save data
 out, out_sinks = g3point_data.save()
