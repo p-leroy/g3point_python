@@ -5,11 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc0f497f-3735-4e9e-bf11-aebe186f54dc" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/data/debug/A.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/debug/Dist.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/debug/Nneigh.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/debug/py_Aangle.data.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/debug/symmetrical_condition.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/g3point/cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point/cluster.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/g3point/tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point/tools.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_g3point.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_g3point.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -184,6 +184,8 @@
       <workItem from="1715505641118" duration="2594000" />
       <workItem from="1715754145208" duration="12193000" />
       <workItem from="1715812316641" duration="560000" />
+      <workItem from="1715846544336" duration="2492000" />
+      <workItem from="1715849064401" duration="5172000" />
     </task>
     <servers />
   </component>
@@ -246,11 +248,6 @@
           <option name="timeStamp" value="49" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/g3point/cluster.py</url>
-          <line>323</line>
-          <option name="timeStamp" value="56" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/g3point/ellipsoid.py</url>
           <line>262</line>
           <option name="timeStamp" value="91" />
@@ -267,23 +264,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/g3point/cluster.py</url>
-          <line>262</line>
-          <option name="timeStamp" value="103" />
+          <line>312</line>
+          <option name="timeStamp" value="108" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/g3point/cluster.py</url>
-          <line>280</line>
-          <option name="timeStamp" value="104" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/g3point/cluster.py</url>
-          <line>135</line>
-          <option name="timeStamp" value="106" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/g3point/cluster.py</url>
-          <line>175</line>
-          <option name="timeStamp" value="107" />
+          <url>file://$PROJECT_DIR$/g3point/ellipsoid.py</url>
+          <line>220</line>
+          <option name="timeStamp" value="109" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

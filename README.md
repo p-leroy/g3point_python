@@ -18,7 +18,7 @@ This algorithm relies on 3 main phases:
 2. Grain **merging and cleaning**
 3. Grain **fitting by geometrical models** including ellipsoids and cuboids
 
-## How it works
+## HOWTO
 
 First you have to import the ```g3point``` module.  
 **Note:** it's up to you to configure correctly the python path for your 
@@ -73,3 +73,10 @@ g3point_data.clean()
 ```
 out, out_sinks = g3point_data.save()
 ```
+
+### Ellipsoid fitting
+
+Once you have a group of points, it is possible to fit an ellipsoid to this group.
+This is not done for the g3point_data object as a whole at the current time.
+
+```center, radii, quaternions, rotation_matrix, ellipsoid_parameters = g3point.fit_ellipsoid_to_grain(xyz)```

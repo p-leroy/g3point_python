@@ -20,3 +20,9 @@ g3point_data.clean(version='cpp')
 
 #%% Save data
 out, out_sinks = g3point_data.save()
+
+#%% Try some fitting
+xyz_grain = g3point_data.xyz[g3point_data.stacks[0], :]
+center, radii, quaternions, rotation_matrix, ellipsoid_parameters = g3point.fit_ellipsoid_to_grain(xyz_grain)
+
+#%% Plot

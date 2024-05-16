@@ -121,7 +121,5 @@ def check_stacks(stacks, number_of_points):
         raise ValueError('stacks are not coherent: the length of the set shall be equal to the number of points')
     if min != 0:  # min value in the set
         raise ValueError('stacks are not coherent: min shall be 0')
-    if max != (number_of_points - 1):  # max value in the set
-        raise ValueError('stacks are not coherent: max shall be equal to (number_of_points - 1)')
 
     return True

@@ -8,11 +8,11 @@ from .tools import check_stacks
 def keep_labels(labels, stacks, condition, sink_indexes):
 
     clusters_to_keep = np.where(condition)[0]
-    new_labels = np.zeros(labels.shape, dtype=int)
+    new_labels = np.zeros(labels.shape, dtype=int) - 1
     new_sink_indexes = np.zeros(clusters_to_keep.shape, dtype=int)
     new_stacks = []
     for k, index in enumerate(clusters_to_keep):
-        new_stacks.append(stacks[index])
+        new_stacks.append(stacks[index].copy())  # be careful, copy is important here!
         new_sink_indexes[k] = sink_indexes[index]
         new_labels[stacks[index]] = k
 
@@ -142,7 +142,7 @@ def merge_cpp(labels, stacks, condition, condition_flag=None):
 
         if new_labels[label] == -1:
             new_labels[label] = count_new_labels
-            new_stacks.append(stacks[label])
+            new_stacks.append(stacks[label].copy())  # it is very important to copy here!
             count_new_labels = count_new_labels + 1
 
         for otherLabel in range(n_labels):
@@ -173,11 +173,6 @@ def merge_cpp(labels, stacks, condition, condition_flag=None):
                     new_labels[otherLabel] = new_labels[label]
 
     # remove empty stacks
-    if new_stacks.count([]):
-        print(f"there are {new_stacks.count([])} empty stacks, remove them")
-    else:
-       print("no empty stack")
-
     new_stacks = [stack for stack in new_stacks if stack != []]
 
     # redefine labels
@@ -250,8 +245,7 @@ def cluster(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_indexes, 
 
     new_sink_indexes = get_sink_indexes(new_stacks, xyz)
 
-    if check_stacks(stacks, len(new_labels)):
-        print("[cluster] stacks are valid")
+    check_stacks(stacks, len(new_labels))
 
     print(
         f'[cluster_labels] check normals at the borders: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')
@@ -303,27 +297,28 @@ def clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, normals,
     condition = (nstack > params.n_min)
     labels, stacks, sink_indexes = keep_labels(labels, stacks, condition, sink_indexes)
 
-    nlabels = len(np.unique(labels))
+    nlabels = len(np.unique(labels[labels != -1]))
     print(f'[clean_labels] remove small labels: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')
     nlabels_start = nlabels
 
     # remove flattish labels (probably not grains)
-    r = np.zeros((nlabels, 3))
+    r = np.zeros((len(stacks), 3))
     for k, stack in enumerate(stacks):
         centroid = np.mean(xyz[stack, :], axis=0)  # compute the centroid of the label
         xyz_c = xyz[stack, :] - centroid  # centered coordinates
         U, S, Vh = np.linalg.svd(xyz_c, full_matrices=False)  # singular value decomposition
         r[k, :] = S
+
     # filtering condition: (l2 / l0 > min_flatness) or (l1 / l0 > 2 * min_flatness)
     condition = (r[:, 2] / r[:, 0] > params.min_flatness) | (r[:, 1] / r[:, 0] > 2. * params.min_flatness)
     labels, stacks, sink_indexes = keep_labels(labels, stacks, condition, sink_indexes)
 
-    nlabels = len(np.unique(labels))
+    nlabels = len(np.unique(labels[labels != -1]))
     print(f'[clean_labels] remove flattish labels: {nlabels}/{nlabels_start} kept ({nlabels_start - nlabels} removed)')
 
-    labels[labels == 0] = -1
+    # how many points have a valid label, and, as a consequence, are in the stacks
+    n_points_with_valid_label = np.count_nonzero(labels != -1)
 
-    if check_stacks(stacks, len(labels)):
-        print("[clean_labels] stacks are valid")
+    check_stacks(stacks, n_points_with_valid_label)
 
     return labels, stacks, sink_indexes
