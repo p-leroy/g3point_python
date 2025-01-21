@@ -5,11 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc0f497f-3735-4e9e-bf11-aebe186f54dc" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/g3point/cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point/cluster.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/g3point/tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point/tools.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_g3point.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_g3point.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lidar_platform/lidar_platform/config/global_shifts.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lidar_platform/lidar_platform/config/global_shifts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lidar_platform/lidar_platform/tools/cc.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lidar_platform/lidar_platform/tools/cc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lidar_platform/lidar_platform/tools/sbf/sbf.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lidar_platform/lidar_platform/tools/sbf/sbf.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,6 +90,7 @@
   <component name="RunManager">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="g3point_python" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -186,6 +185,7 @@
       <workItem from="1715812316641" duration="560000" />
       <workItem from="1715846544336" duration="2492000" />
       <workItem from="1715849064401" duration="5172000" />
+      <workItem from="1726755834635" duration="53000" />
     </task>
     <servers />
   </component>
