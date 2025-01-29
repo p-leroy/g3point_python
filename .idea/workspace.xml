@@ -5,9 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc0f497f-3735-4e9e-bf11-aebe186f54dc" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/g3point/wolman.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point/wolman.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/matlab/Wolman_for_G3P_MAJ_janvier2025.m" beforeDir="false" afterPath="$PROJECT_DIR$/matlab/Wolman_for_G3P_MAJ_janvier2025.m" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lidar_platform/lidar_platform/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lidar_platform/lidar_platform/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lidar_platform/lidar_platform/config/global_shift.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../lidar_platform/lidar_platform/config/global_shift.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lidar_platform/lidar_platform/config/global_shifts.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lidar_platform/lidar_platform/config/global_shifts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lidar_platform/lidar_platform/tools/cc.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lidar_platform/lidar_platform/tools/cc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lidar_platform/lidar_platform/tools/sbf/sbf.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lidar_platform/lidar_platform/tools/sbf/sbf.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,8 +122,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-PY-242.23339.19" />
-        <option value="bundled-python-sdk-0029f7779945-399fe30bd8c1-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.23339.19" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-PY-242.24807.21" />
+        <option value="bundled-python-sdk-00717045f1d3-399fe30bd8c1-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.24807.21" />
       </set>
     </attachedChunks>
   </component>
@@ -197,11 +203,17 @@
       <workItem from="1726755834635" duration="53000" />
       <workItem from="1737533687648" duration="3293000" />
       <workItem from="1737540064758" duration="5995000" />
+      <workItem from="1737616939468" duration="9278000" />
+      <workItem from="1737963321509" duration="10983000" />
+      <workItem from="1738048988363" duration="10623000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.m" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="RECENT_FILTERS">
@@ -285,7 +297,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/g3point/wolman.py</url>
-          <line>34</line>
+          <line>42</line>
           <option name="timeStamp" value="110" />
         </line-breakpoint>
       </breakpoints>

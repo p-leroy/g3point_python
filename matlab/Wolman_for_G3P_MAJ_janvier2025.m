@@ -47,11 +47,12 @@ for i = 1 : n_iter
     d(i) = {baxis(ib) * 1000}; % conversion to millimeter
 end
  
+%%
 for i = 1 : n_iter
     d_sample = [d_sample; d{i}];
     dq(i,:) = quantile(d{i}, [0.1 0.5 0.9]);
 end
- %%
+%%
 edq = std(dq);
 dq_final = quantile(d_sample, [0.1 0.5 0.9]);
 
@@ -59,7 +60,7 @@ dq_final = quantile(d_sample, [0.1 0.5 0.9]);
 figure
 semilogx(sort(d_sample), (1:numel(d_sample)) / numel(d_sample), 'g', 'linewidth', 2);
 hold on
-errorbar(dq_final, [0.1 0.5 0.9], 0, 0, edq, edq, 'og')
+errorbar(dq_final, [0.1 0.5 0.9], [0, 0, 0], [0, 0, 0],  edq, edq,'og')
 plot(dq_final, [0.1 0.5 0.9], 'og', 'markerfacecolor', 'w')
 xlabel('Diameter (mm)');
 ylabel('CDF');
