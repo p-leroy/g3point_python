@@ -55,7 +55,8 @@ for i in range(n_iter):
             dist[ix, iy] = distances[idx]
             i_wolman[ix, iy] = idx
     i_wolman_selection = i_wolman[dist < dx / 10].astype(int)
-    _, _, y_ind = np.intersect1d(labels_grains[i_wolman_selection], labels_ellipsoid,
+    wolman_selection = labels_grains[i_wolman_selection]
+    _, _, y_ind = np.intersect1d(wolman_selection, labels_ellipsoid,
                                  return_indices=True)
     d.append(b_axis[y_ind] * 1000)  # conversion to millimeters
 
