@@ -17,8 +17,10 @@ ellipsoid_file = os.path.join(load_data_folder, 'ellipse_fit_' + study_site + '.
 pc_file = os.path.join(load_data_folder, 'pc_labelled_' + study_site + '.txt')
 
 n_iter = 10
-quantile_args = {'q': [0.1, 0.5 ,0.9],
-                 'method': 'hazen'}
+quantile_args_matlab = {'q': [0.1, 0.5 ,0.9], 'method': 'hazen'}
+quantile_args_defaults = {'q': [0.1, 0.5 ,0.9]}
+
+quantile_args = quantile_args_defaults
 
 #%% Load data
 f1 = np.loadtxt(ellipsoid_file, skiprows=1)
@@ -39,8 +41,20 @@ labels_grains = f2[:, idx_label_grains]
 
 #%%
 d = []
+r_cpp = np.array([ 0.0348951, 0.500107,
+0.427364, 0.904179,
+0.285421, 0.462301,
+0.292024, 0.765092,
+0.988218, 0.308724,
+0.0842801, 0.427416,
+0.522445, 0.48388,
+0.945402, 0.8786,
+0.330725, 0.377017,
+0.120838, 0.962297]).reshape(-1, 2)
+
 for i in range(n_iter):
-    r = np.random.rand(1, 2)[0]
+    # r = np.random.rand(1, 2)[0]
+    r = r_cpp[i, :]
     print(i, r)
     x_grid = np.arange(np.amin(x) - r[0] * dx, np.amax(x), dx)
     y_grid = np.arange(np.amin(y) - r[1] * dx, np.amax(y), dx)
@@ -60,19 +74,57 @@ for i in range(n_iter):
                                  return_indices=True)
     d.append(b_axis[y_ind] * 1000)  # conversion to millimeters
 
+#%%
+d = []
+
+r = np.array([ 0.00125126, 0.563585])
+print(r)
+x_grid = np.arange(np.amin(x) - r[0] * dx, np.amax(x), dx)
+y_grid = np.arange(np.amin(y) - r[1] * dx, np.amax(y), dx)
+n_x = len(x_grid)
+n_y = len(y_grid)
+dist = np.zeros((n_x, n_y))
+i_wolman = np.zeros((n_x, n_y))
+for ix in range(n_x):
+    for iy in range(n_y):
+        distances = ((x - x_grid[ix]) ** 2 + (y - y_grid[iy]) ** 2) ** 0.5
+        idx = np.argmin(distances)
+        dist[ix, iy] = distances[idx]
+        i_wolman[ix, iy] = idx
+i_wolman_selection = i_wolman[dist < dx / 10].astype(int)
+wolman_selection = labels_grains[i_wolman_selection]
+_, _, y_ind = np.intersect1d(wolman_selection, labels_ellipsoid,
+                             return_indices=True)
+d.append(b_axis[y_ind] * 1000)  # conversion to millimeters
 
 #%%
 dq = np.empty((n_iter, 3))
 d_sample = d[0]
 dq[0, :] = np.quantile(d[0], **quantile_args)
 for i in range(1, n_iter):
-    print(i)
     d_sample = np.r_[d_sample, d[i]]
     dq[i, :] = np.quantile(d[i], **quantile_args)
 
 #%%
 edq = np.std(dq, axis=0, ddof=1)
 dq_final = np.quantile(d_sample, **quantile_args)
+
+#%%
+def my_quantile(x, q):  # same results as Python with the default parameters
+    if q > 1.0 or q < 0:
+        raise ValueError('q must be between 0 and 1')
+    n = len(x)
+    x = np.sort(x)
+    id = (n - 1) * q
+    lo = int(np.floor(id))
+    hi = int(np.ceil(id))
+    qs = x[lo]
+    h = (id - lo)
+
+    return (1.0 - h) * qs + h * x[hi]
+
+#%%
+my_quantile(d[0], 0.1)
 
 #%% Save results in a text file
 import csv
@@ -93,7 +145,7 @@ min_d = np.amin(d_sample)
 max_d = np.amax(d_sample)
 fig, ax = plt.subplots(1, 1)
 ax.semilogx(np.sort(d_sample), np.arange(n_samples) / n_samples)
-ax.errorbar(dq_final, [0.1, 0.5, 0.9], [0, 0, 0], edq)
+# ax.errorbar(dq_final, [0.1, 0.5, 0.9], [0, 0, 0], edq)
 ax.set_xlim(min_d, max_d)
 ax.set_ylim(0, 1)
 ax.set_xlabel('Diameter [mm]')
