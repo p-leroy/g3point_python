@@ -1,10 +1,8 @@
 import os
 
-import numpy
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import ScalarFormatter
-import matplotlib.ticker as tck
 
 study_site = '1B'
 
@@ -20,7 +18,20 @@ n_iter = 10
 quantile_args_matlab = {'q': [0.1, 0.5 ,0.9], 'method': 'hazen'}
 quantile_args_defaults = {'q': [0.1, 0.5 ,0.9]}
 
-quantile_args = quantile_args_defaults
+quantile_args = quantile_args_matlab
+
+def my_quantile(x, q):  # same results as Python with the default parameters
+    if q > 1.0 or q < 0:
+        raise ValueError('q must be between 0 and 1')
+    n = len(x)
+    x = np.sort(x)
+    id = (n - 1) * q
+    lo = int(np.floor(id))
+    hi = int(np.ceil(id))
+    qs = x[lo]
+    h = (id - lo)
+
+    return (1.0 - h) * qs + h * x[hi]
 
 #%% Load data
 f1 = np.loadtxt(ellipsoid_file, skiprows=1)
@@ -39,22 +50,15 @@ idx_label_grains = 7
 x, y, z = f2[:, :3].T
 labels_grains = f2[:, idx_label_grains]
 
+#########
+#########
+## WOLMAN
+
 #%%
 d = []
-r_cpp = np.array([ 0.0348951, 0.500107,
-0.427364, 0.904179,
-0.285421, 0.462301,
-0.292024, 0.765092,
-0.988218, 0.308724,
-0.0842801, 0.427416,
-0.522445, 0.48388,
-0.945402, 0.8786,
-0.330725, 0.377017,
-0.120838, 0.962297]).reshape(-1, 2)
 
 for i in range(n_iter):
-    # r = np.random.rand(1, 2)[0]
-    r = r_cpp[i, :]
+    r = np.random.rand(1, 2)[0]
     print(i, r)
     x_grid = np.arange(np.amin(x) - r[0] * dx, np.amax(x), dx)
     y_grid = np.arange(np.amin(y) - r[1] * dx, np.amax(y), dx)
@@ -75,29 +79,6 @@ for i in range(n_iter):
     d.append(b_axis[y_ind] * 1000)  # conversion to millimeters
 
 #%%
-d = []
-
-r = np.array([ 0.00125126, 0.563585])
-print(r)
-x_grid = np.arange(np.amin(x) - r[0] * dx, np.amax(x), dx)
-y_grid = np.arange(np.amin(y) - r[1] * dx, np.amax(y), dx)
-n_x = len(x_grid)
-n_y = len(y_grid)
-dist = np.zeros((n_x, n_y))
-i_wolman = np.zeros((n_x, n_y))
-for ix in range(n_x):
-    for iy in range(n_y):
-        distances = ((x - x_grid[ix]) ** 2 + (y - y_grid[iy]) ** 2) ** 0.5
-        idx = np.argmin(distances)
-        dist[ix, iy] = distances[idx]
-        i_wolman[ix, iy] = idx
-i_wolman_selection = i_wolman[dist < dx / 10].astype(int)
-wolman_selection = labels_grains[i_wolman_selection]
-_, _, y_ind = np.intersect1d(wolman_selection, labels_ellipsoid,
-                             return_indices=True)
-d.append(b_axis[y_ind] * 1000)  # conversion to millimeters
-
-#%%
 dq = np.empty((n_iter, 3))
 d_sample = d[0]
 dq[0, :] = np.quantile(d[0], **quantile_args)
@@ -108,23 +89,6 @@ for i in range(1, n_iter):
 #%%
 edq = np.std(dq, axis=0, ddof=1)
 dq_final = np.quantile(d_sample, **quantile_args)
-
-#%%
-def my_quantile(x, q):  # same results as Python with the default parameters
-    if q > 1.0 or q < 0:
-        raise ValueError('q must be between 0 and 1')
-    n = len(x)
-    x = np.sort(x)
-    id = (n - 1) * q
-    lo = int(np.floor(id))
-    hi = int(np.ceil(id))
-    qs = x[lo]
-    h = (id - lo)
-
-    return (1.0 - h) * qs + h * x[hi]
-
-#%%
-my_quantile(d[0], 0.1)
 
 #%% Save results in a text file
 import csv
@@ -153,86 +117,21 @@ ax.set_ylabel('CDF')
 ax.grid()
 ax.xaxis.set_major_formatter(ScalarFormatter())
 
+#########
+#########
+## ANGLES
+
 #%%
 delta = 1e32
 data = f1
 
 #%%
-k = 0
-n_ellipsoids = len(f1)
-u = np.zeros(n_ellipsoids)
-v = np.zeros(n_ellipsoids)
-w = np.zeros(n_ellipsoids)
-alpha = np.zeros(n_ellipsoids)
-for k in range(n_ellipsoids):
-    sensor_center = np.array((f1[k, 0], f1[k, 1] + delta, f1[k, 2]))
-    # x-y plot - mapview (angle with y axis)
-    u[k] = data[k, 10]
-    v[k] = data[k, 11]
-    w[k] = data[k, 12]
-
-    p1 = sensor_center
-    p2 = np.array((u[k], v[k], w[k]))
-    angle = np.atan2(np.linalg.norm(np.cross(p1, p2)), p1 @ p2)
-
-    if angle > np.pi / 2 or angle < -np.pi / 2:
-        u[k] = -u[k]
-        v[k] = -v[k]
-        w[k] = -w[k]
-
-    alpha[k] = np.atan(v[k] / u[k]) + np.pi / 2
-
-granulo_angle_m_view = alpha
-
-#%%
-alpha = np.zeros(n_ellipsoids)
-
-for k in range(n_ellipsoids):
-    sensor_center = np.array([f1[k, 0], f1[k, 1] + delta, f1[k, 2]])
-    # x-y plot - mapview (angle with y axis)
-    u, v, w = data[k, 10:13]
-
-    p1 = sensor_center
-    p2 = np.array((u, v, w))
-    angle = np.atan2(np.linalg.norm(np.cross(p1, p2)), p1 @ p2)
-
-    if angle > np.pi / 2 or angle < -np.pi / 2:
-        u = -u
-        v = -v
-        w = -w
-
-    alpha[k] = np.atan(v / u) + np.pi / 2
-
-granulo_angle_m_view = alpha * 180 / np.pi
-
-#%%
-alpha2 = np.zeros(n_ellipsoids)
-
-for k in range(n_ellipsoids):
-    sensor_center = np.array([f1[k, 0], f1[k, 1], f1[k, 2] + delta])
-    # x-z plot
-    u, v, w = data[k, 10:13]
-
-    p1 = sensor_center
-    p2 = np.array((u, v, w))
-    angle = np.atan2(np.linalg.norm(np.cross(p1, p2)), p1 @ p2)
-    print(angle)
-    if angle > np.pi / 2 or angle < -np.pi / 2:
-        u = -u
-        v = -v
-        w = -w
-
-    alpha2[k] = np.atan(v / w) + np.pi / 2
-
-granulo_angle_x_view = alpha2 * 180 / np.pi
-
-#%%
 alpha = np.zeros(n_ellipsoids)
 alpha2 = np.zeros(n_ellipsoids)
 
 for k in range(n_ellipsoids):
-    u, v, w = data[k, 10:13]
-    p2 = np.array((u, v, w))
+
+    p2 = np.array((data[k, 10:13]))  # g3point_r00 g3point_r01 g3point_r02
 
     p1 = np.array([f1[k, 0], f1[k, 1] + delta, f1[k, 2]])  # x-y plot - mapview (angle with y axis)
     angle = np.atan2(np.linalg.norm(np.cross(p1, p2)), p1 @ p2)
@@ -265,3 +164,7 @@ ax2.autoscale(enable=True, axis='x', tight=True)
 ax2.set_xlabel('Dip [°]')
 
 fig.tight_layout()
+
+#%%
+from lidar_platform import cc
+cc.q3dmasc()

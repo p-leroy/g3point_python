@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc0f497f-3735-4e9e-bf11-aebe186f54dc" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/g3point/wolman.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3point/wolman.py" afterDir="false" />
     </list>
@@ -64,7 +63,7 @@
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/dev/python/g3point_python/tools&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/dev/python_projects/yellow_scan&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -117,8 +116,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-PY-242.23339.19" />
-        <option value="bundled-python-sdk-0029f7779945-399fe30bd8c1-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.23339.19" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-PY-242.24807.21" />
+        <option value="bundled-python-sdk-00717045f1d3-399fe30bd8c1-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.24807.21" />
       </set>
     </attachedChunks>
   </component>
@@ -203,6 +202,13 @@
       <workItem from="1738048988363" duration="10623000" />
       <workItem from="1738223373708" duration="14272000" />
       <workItem from="1738362022917" duration="1258000" />
+      <workItem from="1738569995172" duration="4427000" />
+      <workItem from="1738651555076" duration="901000" />
+      <workItem from="1738740321777" duration="3077000" />
+      <workItem from="1738945350457" duration="337000" />
+      <workItem from="1739177256711" duration="2879000" />
+      <workItem from="1740387223678" duration="2524000" />
+      <workItem from="1740413802953" duration="515000" />
     </task>
     <servers />
   </component>
@@ -294,7 +300,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/g3point/wolman.py</url>
-          <line>74</line>
+          <line>90</line>
           <option name="timeStamp" value="114" />
         </line-breakpoint>
       </breakpoints>
