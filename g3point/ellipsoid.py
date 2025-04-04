@@ -2,6 +2,7 @@
 #  Levente Hunyadi (2024). Fitting quadratic curves and surfaces
 #  (https://www.mathworks.com/matlabcentral/fileexchange/45356-fitting-quadratic-curves-and-surfaces),
 #  MATLAB Central File Exchange. Retrieved March 21, 2024.
+from operator import index
 
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -62,7 +63,7 @@ def explicit_to_implicit(center, radii, rotation_matrix):
     return p
 
 
-def implicit_to_explicit(p):
+def implicit_to_explicit(p, ignore_quaternions=True):
     """
     Cast ellipsoid defined with implicit parameter vector to explicit form.
     The implicit equation of a general ellipse is
@@ -119,10 +120,18 @@ def implicit_to_explicit(p):
     # solve the eigen problem
     eigenvalues, eigenvectors = np.linalg.eig(s[0: 3, 0: 3])
     radii = np.sqrt(-s[3, 3] / eigenvalues)
+    rotation_matrix = eigenvectors.T
+
+    # reorder radii and eigenvectors
+    index_array = np.argsort(radii)[::-1]
+    radii = radii[index_array]
+    rotation_matrix = rotation_matrix[:, index_array]
 
     # convert rotation matrix to quaternions
-    quaternions = scipy.spatial.transform.Rotation.from_matrix(eigenvectors).as_quat()
-    rotation_matrix = eigenvectors.T
+    if ignore_quaternions:
+        quaternions = None
+    else:
+        quaternions = scipy.spatial.transform.Rotation.from_matrix(eigenvectors).as_quat()
 
     return center, radii, quaternions, rotation_matrix
 
