@@ -1,11 +1,11 @@
 close all
 clear all
 
-study_site = '1B';
+study_site = 'Raniskca_2023';
 
 %To estimate the uncertainties associated with the distribution
 % we use a bootstrap approach with n_iter repetitions.
-n_iter = 100;
+n_iter = 10;
 
 load_data_folder = 'C:/Users/PaulLeroy/Nextcloud/Partages_recus/paul_leroy/Data/';
 save_results_folder = 'C:/Users/PaulLeroy/Nextcloud/Partages_recus/paul_leroy/Results_ple/';
@@ -22,7 +22,7 @@ f2 = load([load_data_folder  pc_file]);
 x = f2(:,1);
 y = f2(:,2);
 z = f2(:,3);
-labels_grains = f2(:,8);
+labels_grains = f2(:, 7);  % be careful of the columns in pc_labelled_ here! LGU => 8 (g3point_initial_segmentation), PLE => 7
 
 %%
 d = cell(n_iter);
@@ -30,6 +30,7 @@ d_sample = [];
 for i = 1 : n_iter
     clear iwol dist
     r = rand(2, 1);
+    disp([num2str(r(1)), ',', num2str(r(2)), ','])
     xgrid = min(x) - r(1) * dx : dx : max(x);
     ygrid = min(y) - r(2) * dx : dx : max(y);
     [Xgrid,Ygrid] = meshgrid(xgrid,ygrid);
