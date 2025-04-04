@@ -7,10 +7,13 @@ cloud = os.path.join(dir_, "Otira_1cm_grains.ply")
 ini = os.path.join(dir_, "Otira_1cm_grains.ini")
 
 #%% Create G3Point object
-g3point_data = g3point.G3Point(cloud, ini, remove_mins=False)
+g3point_data = g3point.G3Point(cloud, ini, remove_mins=True)
 
 #%% Initial segmentation
 g3point_data.initial_segmentation()
+
+#%% Fit ellipsoids
+g3point_data.fit_ellipsoids()
 
 #%% Cluster labels
 g3point_data.cluster(version='cpp')

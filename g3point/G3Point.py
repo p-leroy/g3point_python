@@ -9,6 +9,7 @@ from .detrend import orient_normals, rotate_point_cloud_plane
 from .G3PointParameters import G3PointParameters
 from .segment import segment_labels
 from .tools import load_data, save_data_with_colors
+from .ellipsoid import fit_ellipsoid_to_grain
 
 
 class G3Point:
@@ -49,6 +50,8 @@ class G3Point:
         self.labels = None
         self.stacks = None
         self.sink_indexes = None
+
+        self.g3point_results = None
 
     def initial_segmentation(self):
 
@@ -138,3 +141,21 @@ class G3Point:
                                                   self.stacks, np.arange(len(self.stacks)), '_G3POINT_SINKS')
 
         return g3point, g3point_sinks
+
+    def fit_ellipsoid(self, label):
+        stack = self.stacks[label]
+        xyz_grain = self.xyz[stack, :]
+        center, radii, quaternions, rotation_matrix, ellipsoid_parameters = fit_ellipsoid_to_grain(xyz_grain)
+        return center, radii, quaternions, rotation_matrix, ellipsoid_parameters
+
+    def fit_ellipsoids(self):
+        self.g3point_results = np.zeros((len(self.stacks), 3 + 3 + 9))
+        for label, stack in enumerate(self.stacks):
+            progress = int(label / len(self.stacks) * 100)
+            if progress % 10 == 0:
+                print(f'progress {progress}%')
+            xyz_grain = self.xyz[stack, :]
+            center, radii, quaternions, rotation_matrix, ellipsoid_parameters = fit_ellipsoid_to_grain(xyz_grain)
+            self.g3point_results[label, 0:3] = center
+            self.g3point_results[label, 3:6] = radii
+            self.g3point_results[label, 6:15] = rotation_matrix.flatten()

@@ -185,6 +185,88 @@ def direct_fit(xyz, method='evd'):
     return p
 
 
+def rotation_3d_to_euler_angles(mat):
+    rad_to_deg = 180 / np.pi
+
+    cy = np.hypot(mat[0, 0], mat[1, 0])  # extract cos(theta)
+
+    # avoid dividing by 0
+    if cy > 16 * np.finfo(float).eps:
+        # normal case, theta < 0 or theta > 0
+        psi = rad_to_deg * np.arctan2(mat[2, 1], mat[2, 2])
+        theta = rad_to_deg * np.arctan2(-mat[2, 0], cy)
+        phi = rad_to_deg * np.arctan2(mat[1, 0], mat[0, 0])
+    else:
+        psi = rad_to_deg * np.arctan2(-mat[1, 2], mat[1, 1])
+        theta = rad_to_deg * np.arctan2(-mat[2, 0], cy)
+        phi = 0
+
+    return phi, theta, psi
+
+
+def euler_angles_to_rotation_3d(phi, theta, psi):
+    deg_to_rad = np.pi / 180
+    phi = deg_to_rad * phi
+    theta = deg_to_rad * theta
+    psi = deg_to_rad * psi
+
+    rot_x = np.array([  # psi
+        [1, 0, 0],
+        [0, np.cos(psi), -np.sin(psi)],
+        [0, np.sin(psi), np.cos(psi)]
+    ])
+
+    rot_y = np.array([  # theta
+        [np.cos(theta), 0, np.sin(theta)],
+        [0, 1, 0],
+        [-np.sin(theta), 0, np.cos(theta)]
+    ])
+
+    rot_z = np.array([  # phi
+        [np.cos(phi), -np.sin(phi), 0],
+        [np.sin(phi), np.cos(phi), 0],
+        [0, 0, 1]
+    ])
+
+    mat = rot_z @ rot_y @ rot_x
+
+    return mat
+
+
+def inertia_fit(xyz):
+    """
+    Modified from the function equivalentEllipsoid written by David Legland
+    Original author: David Legland / slightly modified by Philippe Steer to
+    adapt the function to inertia "surfacic" ellipsoids sampled only by surface points
+    See Geom3D toolbox
+    :param xyz:
+    :return:
+    """
+
+    n = xyz.shape[0]  # number of points
+    center = np.mean(xyz, axis=0)  # compute centroid
+    cov_pts = np.cov(xyz, rowvar=False) / n  # compute the covariance matrix
+
+    # perform principal component analysis with 2 variables to extract equivalent axes
+    U, S, Vh =  np.linalg.svd(cov_pts, full_matrices=False)
+
+    # Correct for surface ellipsoids - modification made by P.Steer (correct factor for hollow ellipsoids based on
+    # surface points https://en.wikipedia.org / wiki / List_of_moments_of_inertia)
+    radii = 3**0.5 * (S * n)**0.5  # extract length of each semi axis
+
+    # format U to ensure first axis xyz to positive x direction
+    if U[0, 0] < 0:
+        U = -U
+        U[:, 2] = -U[:, 2]  # keep matrix determinant positive
+
+    # convert axes rotation matrix to Euler angles
+    phi, theta, psi = rotation_3d_to_euler_angles(U)
+
+    R = euler_angles_to_rotation_3d(-phi, theta, psi)
+
+    return R, center, radii
+
+
 def fit_ellipsoid_to_grain(xyz, method='direct'):
     # Shift point cloud to have only positive coordinates (problem with
     # quadfit if the point cloud is far from the coordinates of the origin (0,0,0))
@@ -205,6 +287,9 @@ def fit_ellipsoid_to_grain(xyz, method='direct'):
         [center, radii, quaternions, rotation_matrix] = implicit_to_explicit(ellipsoid_parameters)
         if center is None:
             return None, None, None, None, None
+    elif method == 'inertia':
+        rotation_matrix, center, radii = inertia_fit(scale * (xyz - np.mean(xyz, axis=0)))
+        quaternions = None
     else:
         raise ValueError('Unknown method')
 

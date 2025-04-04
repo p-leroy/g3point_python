@@ -14,7 +14,7 @@ cloud = os.path.join(dir_, "Otira_1cm_grains.ply")
 cloud_test_laz = os.path.join(dir_, "test.laz")
 cloud_detrended = os.path.join(dir_, "Otira_1cm_grains_rotated_detrended.ply")
 cloud_ardeche = os.path.join(dir_, "Ardeche_2021_inter_survey_C2.part.laz")
-ini = r"C:\dev\python\g3point_python\params.ini"
+ini = r"C:\dev\python\g3point_python\data\Otira_1cm_grains.ini"
 
 # Load data
 xyz = tools.load_data(cloud)
@@ -23,7 +23,7 @@ if True:
     mins = np.amin(xyz, axis=0)  # WARNING: done in the Matlab code
     xyz = xyz - mins
 
-params = Parameters.Parameters(ini)
+params = G3PointParameters(ini)
 
 # Rotate and detrend the point cloud
 if params.rot_detrend:
@@ -58,7 +58,7 @@ sensor_center = np.array([centroid[0], centroid[1], 1000])
 normals = orient_normals(xyz, np.asarray(pcd.normals), sensor_center)
 
 # Initial segmentation
-labels, nlabels, labelsnpoint, stacks, ndon, sink_indexes = segment_labels(xyz_detrended, params.knn, neighbors_indexes)
+labels, stacks, ndon, local_maximum_indexes = segment_labels(xyz_detrended, params.knn, neighbors_indexes)
 
 # Cluster labels
 # [labels, nlabels, stacks, sink_indexes] = cluster(xyz, params, neighbors_indexes, labels, stacks, ndon,
@@ -73,7 +73,7 @@ labels, nlabels, labelsnpoint, stacks, ndon, sink_indexes = segment_labels(xyz_d
 # do not forget to add mins if needed
 g3point = tools.save_data_with_colors(cloud, xyz + mins,
                                   stacks, labels, '_G3POINT')
-g3point_sinks = tools.save_data_with_colors(cloud, xyz[sink_indexes, :] + mins,
+g3point_sinks = tools.save_data_with_colors(cloud, xyz[local_maximum_indexes, :] + mins,
                                   stacks, np.arange(len(stacks)), '_G3POINT_SINKS')
 
 #%% show initial segmentation
@@ -81,7 +81,7 @@ colors = np.random.rand(len(stacks), 3)[labels, :]
 pcd.colors = o3d.utility.Vector3dVector(colors)
 # build pcd_sinks
 pcd_sinks = o3d.geometry.PointCloud()
-pcd_sinks.points = o3d.utility.Vector3dVector(xyz_detrended[sink_indexes, :])
+pcd_sinks.points = o3d.utility.Vector3dVector(xyz_detrended[local_maximum_indexes, :])
 pcd_sinks.paint_uniform_color(np.array([1., 0., 0.]))
 
 #%%
