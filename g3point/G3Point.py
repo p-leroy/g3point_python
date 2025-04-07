@@ -158,4 +158,7 @@ class G3Point:
             center, radii, quaternions, rotation_matrix, ellipsoid_parameters = fit_ellipsoid_to_grain(xyz_grain)
             self.g3point_results[label, 0:3] = center
             self.g3point_results[label, 3:6] = radii
-            self.g3point_results[label, 6:15] = rotation_matrix.flatten()
+            if rotation_matrix is not None:
+                self.g3point_results[label, 6:15] = rotation_matrix.flatten()
+            else:
+                self.g3point_results[label, 6:15].fill(np.nan)
