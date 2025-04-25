@@ -12,6 +12,18 @@ from .tools import load_data, save_data_with_colors
 from .ellipsoid import fit_ellipsoid_to_grain
 
 
+import colorsys
+import random
+
+def generate_distinct_colors(n):
+    hues = [i / n for i in range(n)]
+    random.shuffle(hues)  # Optional: shuffle so colors aren't in rainbow order
+    rgb = np.empty((n, 3))
+    for k, hue in enumerate(hues):
+        rgb[k, :] = colorsys.hsv_to_rgb(hue, 0.75, 0.95)
+    return rgb
+
+
 class G3Point:
     def __init__(self, cloud, ini, remove_mins=True):
 
@@ -162,3 +174,26 @@ class G3Point:
                 self.g3point_results[label, 6:15] = rotation_matrix.flatten()
             else:
                 self.g3point_results[label, 6:15].fill(np.nan)
+            self.g3point_results[label, 6:15] = rotation_matrix.flatten()
+
+    def get_pcd_and_pcd_sinks(self, other_colors=False):
+
+        # build pcd
+        pcd = o3d.geometry.PointCloud()
+        pcd.points = o3d.utility.Vector3dVector(self.xyz)
+        rng = np.random.default_rng(42)  # random generator
+        if other_colors:
+            # r = rng.random(len(self.stacks)).reshape(-1, 1)
+            # g = rng.random(len(self.stacks)).reshape(-1, 1)
+            # b = 1 - (r + g) / 2
+            # colors = np.c_[r, g, b][self.labels, :]  # create random colors
+            colors = generate_distinct_colors(len(self.stacks))[self.labels, :]  # create random colors
+        else:
+            colors = rng.random((len(self.stacks), 3))[self.labels, :]  # create random colors
+        pcd.colors = o3d.utility.Vector3dVector(colors)  # set pcd random colors
+        # build pcd_sinks
+        pcd_sinks = o3d.geometry.PointCloud()
+        pcd_sinks.points = o3d.utility.Vector3dVector(self.xyz[self.sink_indexes, :])
+        pcd_sinks.paint_uniform_color(np.array([1., 0., 0.]))
+
+        return pcd, pcd_sinks
