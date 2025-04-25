@@ -3,3 +3,5 @@
 .idea/
 /.idea
 matlab/Wolman_for_G3P_MAJ_janvier2025.asv
+*.mat
+*.pkl
