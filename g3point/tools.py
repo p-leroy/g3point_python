@@ -40,19 +40,13 @@ def save_data_with_colors(cloud, xyz, stacks, labels, tag):
 
     # 1. Create a new header
     header = laspy.LasHeader(point_format=7, version="1.4")
-    header.x_offset = (np.amax(x) + np.amin(x)) / 2
-    header.y_offset = (np.amax(y) + np.amin(y)) / 2
-    header.z_offset = (np.amax(z) + np.amin(z)) / 2
-    ranges = np.max(xyz, axis=0) - np.min(xyz, axis=0)
-    scales = ranges / (2**32 - 2)  # 2**32 - 1 does not work
-    header.scales = scales
 
     # 2. Create a Las
     las = laspy.LasData(header)
 
-    las.x = np.squeeze(x[:])
-    las.y = np.squeeze(y[:])
-    las.z = np.squeeze(z[:])
+    las.x = np.squeeze(x)
+    las.y = np.squeeze(y)
+    las.z = np.squeeze(z)
 
     # set random colors
     # rng = np.random.default_rng(42)

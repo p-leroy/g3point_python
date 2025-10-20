@@ -3,6 +3,7 @@ import os
 import numpy as np
 import open3d as o3d
 from scipy.spatial import KDTree
+from tqdm import tqdm
 
 from .cluster import clean_labels, cluster
 from .detrend import orient_normals, rotate_point_cloud_plane
@@ -162,10 +163,7 @@ class G3Point:
 
     def fit_ellipsoids(self):
         self.g3point_results = np.zeros((len(self.stacks), 3 + 3 + 9))
-        for label, stack in enumerate(self.stacks):
-            progress = int(label / len(self.stacks) * 100)
-            if progress % 10 == 0:
-                print(f'progress {progress}%')
+        for label, stack in enumerate(tqdm(self.stacks)):
             xyz_grain = self.xyz[stack, :]
             center, radii, quaternions, rotation_matrix, ellipsoid_parameters = fit_ellipsoid_to_grain(xyz_grain)
             self.g3point_results[label, 0:3] = center

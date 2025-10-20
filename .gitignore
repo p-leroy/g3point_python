@@ -5,3 +5,6 @@
 matlab/Wolman_for_G3P_MAJ_janvier2025.asv
 *.mat
 *.pkl
+/data/Otira_1cm_grains_G3POINT.laz
+/data/Otira_1cm_grains_G3POINT_SINKS.laz
+/.idea
