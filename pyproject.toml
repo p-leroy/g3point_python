@@ -1,0 +1,23 @@
+[project]
+name = "g3point-python"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "Paul Leroy", email = "paul.leroy@univ-rennes1.fr" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "open3d",
+    "laspy",
+    "scikit-learn",
+    "tqdm"]
+
+[project.scripts]
+g3point-python = "g3point_python:main"
+
+[build-system]
+requires = ["uv_build>=0.12.21,<0.13.0"]
+build-backend = "uv_build"

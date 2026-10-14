@@ -133,7 +133,8 @@ def merge_cpp(labels, stacks, condition, condition_flag=None, debug=False):
 
     if debug:
         # Save condition
-        dir_debug = os.path.join(Path.home(), 'g3point')
+        current_dir = os.path.split(__file__)[0]
+        dir_debug = os.path.join(current_dir, '../../out')
         filename = os.path.join(dir_debug, 'condition.npy')
         print(f'Save {filename}')
         np.save(filename, condition)
@@ -262,7 +263,8 @@ def cluster(xyz, params, neighbors_indexes, labels, stacks, ndon, sink_indexes, 
 
     if debug:
         # Save angles
-        dir_debug = os.path.join(Path.home(), 'g3point')
+        current_dir = os.path.split(__file__)[0]
+        dir_debug = os.path.join(current_dir, '../../out')
         filename = os.path.join(dir_debug, 'Aangle.npy')
         print(f'Save {filename}')
         np.save(filename, Aangle)
