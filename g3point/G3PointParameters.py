@@ -1,8 +1,11 @@
 import configparser
+import os
 
 
 class G3PointParameters:
     def __init__(self, ini):
+        if not os.path.exists(ini):
+            raise FileNotFoundError(ini)
         config = configparser.ConfigParser()
         config.read(ini)
         params = config['DEFAULT']

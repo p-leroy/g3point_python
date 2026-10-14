@@ -9,12 +9,12 @@ from g3point.detrend import rotate_point_cloud_plane, orient_normals
 from g3point.segment import segment_labels
 
 # Inputs
-dir_ = r"C:\DATA\PhilippeSteer\G3Point"
+dir_ = "./data"
 cloud = os.path.join(dir_, "Otira_1cm_grains.ply")
 cloud_test_laz = os.path.join(dir_, "test.laz")
 cloud_detrended = os.path.join(dir_, "Otira_1cm_grains_rotated_detrended.ply")
 cloud_ardeche = os.path.join(dir_, "Ardeche_2021_inter_survey_C2.part.laz")
-ini = r"C:\dev\python\g3point_python\data\Otira_1cm_grains.ini"
+ini = os.path.join(dir_, "Otira_1cm_grains.ini")
 
 # Load data
 xyz = tools.load_data(cloud)

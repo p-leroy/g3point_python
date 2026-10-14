@@ -1,28 +1,31 @@
 import os
+from pathlib import Path
 
 import numpy as np
 import open3d as o3d
 from scipy.spatial import KDTree
 
-import g3point
+from g3point import G3PointParameters, tools
 from g3point.detrend import rotate_point_cloud_plane, orient_normals
 from g3point.cluster import clean_labels, cluster
 from g3point.segment import segment_labels
 from g3point.visualization import show_clouds
 
+dir_debug = os.path.join(Path.home(), 'g3point')
+
 # Inputs
-dir_ = r"C:\DATA\PhilippeSteer\G3Point"
+dir_ = r"./data"
 cloud = os.path.join(dir_, "Otira_1cm_grains.ply")
 cloud_detrended = os.path.join(dir_, "Otira_1cm_grains_rotated_detrended.ply")
 cloud_ardeche = os.path.join(dir_, "Ardeche_2021_inter_survey_C2.part.laz")
-ini = r"C:\dev\python\g3point_python\params.ini"
+ini = os.path.join(dir_, "Otira_1cm_grains.ini")
 
 # Load data
-xyz = g3point.load_data(cloud)
+xyz = tools.load_data(cloud)
 # Remove min values
-xyz = xyz - np.amin(xyz, axis=0)
+# xyz = xyz - np.amin(xyz, axis=0)
 
-params = g3point.read_parameters(ini)
+params = G3PointParameters(ini)
 
 # Rotate and detrend the point cloud
 if params.rot_detrend:
@@ -57,18 +60,24 @@ sensor_center = np.array([centroid[0], centroid[1], 1000])
 normals = orient_normals(xyz, np.asarray(pcd.normals), sensor_center)
 
 # Initial segmentation
-labels, nlabels, labelsnpoint, stacks, ndon, sink_indexes = segment_labels(xyz_detrended, params.knn, neighbors_indexes)
+labels, stacks, ndon, local_maximum_indexes = segment_labels(xyz_detrended, params.knn, neighbors_indexes)
+expected_number_of_labels = 755
 
-# Cluster labels
-[labels, nlabels, stacks, sink_indexes] = cluster(xyz, params, neighbors_indexes, labels, stacks, ndon,
-                                                  sink_indexes, surface, normals)
+# %% Cluster labels
+[labels, stacks, sink_indexes] = cluster(xyz, params, neighbors_indexes, labels, stacks, ndon,
+                                         local_maximum_indexes, surface, normals,
+                                         debug=True)
 
-# Clean labels
-[labels, nlabels, stacks, sink_indexes] = clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, normals)
+# %% Clean labels
+[labels, stacks, sink_indexes] = clean_labels(xyz, params, neighbors_indexes, labels, stacks, ndon, normals)
+print(f'Clean labels: {len(stacks)}')
+
+# %%
 
 # set pcd random colors
 rng = np.random.default_rng(42)
 colors = rng.random((len(stacks), 3))[labels, :]
+colors[:, 2] = 1. - (colors[:, 0] + colors[:, 1]) / 2
 pcd.colors = o3d.utility.Vector3dVector(colors)
 
 # build pcd_sinks
@@ -84,3 +93,9 @@ clouds = (
 show_clouds(clouds)
 
 # o3d.visualization.draw(pcd)  # Open3d visualizer
+
+# %%
+o3d.io.write_point_cloud(os.path.join(dir_, 'Otira_1cm_grains.pcd'), pcd)
+
+# %%
+np.save(os.path.join(dir_debug, 'labels.npy'), labels)
